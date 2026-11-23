@@ -1,257 +1,55 @@
-{
-  "version": "2.6.2",
-  "release_version": "",
-  "released_at": "",
-  "summary": {
-    "title": "New Threat Model",
-    "owner": "",
-    "description": "",
-    "id": 0
-  },
-  "detail": {
-    "contributors": [],
-    "diagrams": [
-      {
-        "id": 0,
-        "title": "New STRIDE diagram",
-        "diagramType": "STRIDE",
-        "placeholder": "New STRIDE diagram description",
-        "thumbnail": "./public/content/images/thumbnail.stride.jpg",
-        "version": "2.6.2",
-        "cells": [
-          {
-            "position": {
-              "x": 710,
-              "y": -340
-            },
-            "size": {
-              "width": 112.5,
-              "height": 60
-            },
-            "attrs": {
-              "body": {
-                "stroke": "#333333",
-                "strokeWidth": 1.5,
-                "strokeDasharray": null
-              }
-            },
-            "visible": true,
-            "shape": "actor",
-            "zIndex": 1,
-            "ports": {
-              "groups": {
-                "top": {
-                  "position": "top",
-                  "attrs": {
-                    "circle": {
-                      "r": 4,
-                      "magnet": true,
-                      "stroke": "#5F95FF",
-                      "strokeWidth": 1,
-                      "fill": "#fff",
-                      "style": {
-                        "visibility": "hidden"
-                      }
-                    }
-                  }
-                },
-                "right": {
-                  "position": "right",
-                  "attrs": {
-                    "circle": {
-                      "r": 4,
-                      "magnet": true,
-                      "stroke": "#5F95FF",
-                      "strokeWidth": 1,
-                      "fill": "#fff",
-                      "style": {
-                        "visibility": "hidden"
-                      }
-                    }
-                  }
-                },
-                "bottom": {
-                  "position": "bottom",
-                  "attrs": {
-                    "circle": {
-                      "r": 4,
-                      "magnet": true,
-                      "stroke": "#5F95FF",
-                      "strokeWidth": 1,
-                      "fill": "#fff",
-                      "style": {
-                        "visibility": "hidden"
-                      }
-                    }
-                  }
-                },
-                "left": {
-                  "position": "left",
-                  "attrs": {
-                    "circle": {
-                      "r": 4,
-                      "magnet": true,
-                      "stroke": "#5F95FF",
-                      "strokeWidth": 1,
-                      "fill": "#fff",
-                      "style": {
-                        "visibility": "hidden"
-                      }
-                    }
-                  }
-                }
-              },
-              "items": [
-                {
-                  "group": "top",
-                  "id": "4a6bd099-13fa-428b-bfaf-6f94b5aaae10"
-                },
-                {
-                  "group": "right",
-                  "id": "67028584-c805-4327-a644-68a37826c716"
-                },
-                {
-                  "group": "bottom",
-                  "id": "f2fa65bb-4993-46d0-bea8-2d19bf5438d6"
-                },
-                {
-                  "group": "left",
-                  "id": "dd73e25c-5911-461a-a737-e992312cb765"
-                }
-              ]
-            },
-            "id": "0020754f-5945-4684-9e6d-a8bbbed375d8",
-            "data": {
-              "type": "tm.Actor",
-              "name": "Actor",
-              "description": "",
-              "isTrustBoundary": false,
-              "outOfScope": false,
-              "reasonOutOfScope": "",
-              "hasOpenThreats": false,
-              "providesAuthentication": false,
-              "threats": []
-            }
-          },
-          {
-            "position": {
-              "x": 460,
-              "y": -560
-            },
-            "size": {
-              "width": 112.5,
-              "height": 60
-            },
-            "attrs": {
-              "body": {
-                "stroke": "#333333",
-                "strokeWidth": 1.5,
-                "strokeDasharray": null
-              }
-            },
-            "visible": true,
-            "shape": "actor",
-            "zIndex": 2,
-            "ports": {
-              "groups": {
-                "top": {
-                  "position": "top",
-                  "attrs": {
-                    "circle": {
-                      "r": 4,
-                      "magnet": true,
-                      "stroke": "#5F95FF",
-                      "strokeWidth": 1,
-                      "fill": "#fff",
-                      "style": {
-                        "visibility": "hidden"
-                      }
-                    }
-                  }
-                },
-                "right": {
-                  "position": "right",
-                  "attrs": {
-                    "circle": {
-                      "r": 4,
-                      "magnet": true,
-                      "stroke": "#5F95FF",
-                      "strokeWidth": 1,
-                      "fill": "#fff",
-                      "style": {
-                        "visibility": "hidden"
-                      }
-                    }
-                  }
-                },
-                "bottom": {
-                  "position": "bottom",
-                  "attrs": {
-                    "circle": {
-                      "r": 4,
-                      "magnet": true,
-                      "stroke": "#5F95FF",
-                      "strokeWidth": 1,
-                      "fill": "#fff",
-                      "style": {
-                        "visibility": "hidden"
-                      }
-                    }
-                  }
-                },
-                "left": {
-                  "position": "left",
-                  "attrs": {
-                    "circle": {
-                      "r": 4,
-                      "magnet": true,
-                      "stroke": "#5F95FF",
-                      "strokeWidth": 1,
-                      "fill": "#fff",
-                      "style": {
-                        "visibility": "hidden"
-                      }
-                    }
-                  }
-                }
-              },
-              "items": [
-                {
-                  "group": "top",
-                  "id": "4a6bd099-13fa-428b-bfaf-6f94b5aaae10"
-                },
-                {
-                  "group": "right",
-                  "id": "67028584-c805-4327-a644-68a37826c716"
-                },
-                {
-                  "group": "bottom",
-                  "id": "f2fa65bb-4993-46d0-bea8-2d19bf5438d6"
-                },
-                {
-                  "group": "left",
-                  "id": "dd73e25c-5911-461a-a737-e992312cb765"
-                }
-              ]
-            },
-            "id": "9ee25b7d-6f18-470f-b2b8-5db36b93518d",
-            "data": {
-              "type": "tm.Actor",
-              "name": "Actor",
-              "description": "",
-              "isTrustBoundary": false,
-              "outOfScope": false,
-              "reasonOutOfScope": "",
-              "hasOpenThreats": false,
-              "providesAuthentication": false,
-              "threats": []
-            }
-          }
-        ]
-      }
-    ],
-    "diagramTop": 1,
-    "reviewer": "",
-    "threatTop": 0
-  }
-}
+
+# DFD Kasus B - Sistem Berbagi Dokumen melalui Tautan Sementara
+
+```mermaid
+flowchart TB
+    subgraph PUBLIC["TRUST BOUNDARY 1 - PUBLIK"]
+        OWNER["Browser Pemilik Dokumen"]
+        RECIPIENT["Browser Penerima Eksternal - Tanpa Login"]
+        ADMIN["Browser Admin Organisasi"]
+    end
+
+    subgraph BACKEND["TRUST BOUNDARY 2 - APLIKASI"]
+        APP["P1 - Backend Dokumen"]
+    end
+
+    subgraph STORAGE["TRUST BOUNDARY 3 - PENYIMPANAN"]
+        DB[("D1 - Database Metadata")]
+        OS[("D2 - Object Storage")]
+    end
+
+    OWNER -->|"1. Upload file dan identitas pemilik"| APP
+    APP -->|"2. Status upload"| OWNER
+
+    APP -->|"3. Simpan isi file"| OS
+    APP -->|"4. Simpan metadata file"| DB
+
+    OWNER -->|"5. Buat atau cabut tautan"| APP
+    APP -->|"6. Simpan identitas tautan, masa berlaku 24 jam, status pencabutan dan log"| DB
+    APP -->|"7. Tautan berbagi atau status pencabutan"| OWNER
+
+    RECIPIENT -->|"8. Token tautan dan permintaan akses tanpa login"| APP
+    APP -->|"9. Periksa tautan dan status"| DB
+    DB -->|"10. Metadata, masa berlaku dan status pencabutan"| APP
+
+    APP -->|"11. Permintaan file setelah validasi"| OS
+    OS -->|"12. Isi file"| APP
+    APP -->|"13. File untuk diunduh atau akses ditolak"| RECIPIENT
+
+    APP -->|"14. Catat aktivitas penggunaan tautan"| DB
+
+    ADMIN -->|"15. Permintaan metadata dan audit log"| APP
+    DB -->|"16. Data metadata dan audit log"| APP
+    APP -->|"17. Metadata dan audit log tanpa isi file"| ADMIN
+
+    style PUBLIC fill:#fff3e0,stroke:#ef6c00,stroke-width:2px
+    style BACKEND fill:#e3f2fd,stroke:#1565c0,stroke-width:2px
+    style STORAGE fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
+
+    style OWNER fill:#ffe0b2,stroke:#ef6c00
+    style RECIPIENT fill:#ffe0b2,stroke:#ef6c00
+    style ADMIN fill:#ffe0b2,stroke:#ef6c00
+    style APP fill:#bbdefb,stroke:#1565c0
+    style DB fill:#c8e6c9,stroke:#2e7d32
+    style OS fill:#c8e6c9,stroke:#2e7d32
+```
