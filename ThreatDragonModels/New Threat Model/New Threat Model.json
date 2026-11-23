@@ -912,7 +912,7 @@
             "connector": "smooth",
             "data": {
               "type": "tm.Flow",
-              "name": "F1. Unggah file + sesi pemilik",
+              "name": "F1",
               "description": "File yang diunggah dan identitas/sesi pemilik untuk proses unggah.",
               "outOfScope": false,
               "isTrustBoundary": false,
@@ -982,7 +982,7 @@
             "connector": "smooth",
             "data": {
               "type": "tm.Flow",
-              "name": "F2. Buat / tinjau / cabut tautan",
+              "name": "F2",
               "description": "Permintaan membuat tautan 24 jam, melihat daftar tautan aktif, atau mencabut tautan milik sendiri.",
               "outOfScope": false,
               "isTrustBoundary": false,
@@ -1038,7 +1038,7 @@
             "connector": "smooth",
             "data": {
               "type": "tm.Flow",
-              "name": "F3. Status + tautan / daftar aktif",
+              "name": "F3",
               "description": "Status unggah, tautan yang dibuat, daftar tautan aktif, atau hasil pencabutan.",
               "outOfScope": false,
               "isTrustBoundary": false,
@@ -1052,7 +1052,7 @@
               "trustBoundaryIds": []
             },
             "labels": [
-              "F3. Status + tautan / daftar aktif"
+              " F3. Status tauatan : aktif/nonakti"
             ],
             "id": "816833a3-47d2-40d2-b283-b503443616f2",
             "source": {
@@ -1094,7 +1094,7 @@
             "connector": "smooth",
             "data": {
               "type": "tm.Flow",
-              "name": "F4. Token + akses unduh tanpa login",
+              "name": "F4",
               "description": "Penerima eksternal tanpa login meminta halaman/unduh dengan token yang terkandung dalam tautan.",
               "outOfScope": false,
               "isTrustBoundary": false,
@@ -1168,7 +1168,7 @@
             "connector": "smooth",
             "data": {
               "type": "tm.Flow",
-              "name": "F5. File / akses ditolak",
+              "name": "F5",
               "description": "File diberikan untuk unduh hanya apabila tautan sah; selain itu respons penolakan.",
               "outOfScope": false,
               "isTrustBoundary": false,
@@ -1224,7 +1224,7 @@
             "connector": "smooth",
             "data": {
               "type": "tm.Flow",
-              "name": "F6. Permintaan metadata + audit log",
+              "name": "F6",
               "description": "Permintaan peninjauan metadata dan log audit dari admin.",
               "outOfScope": false,
               "isTrustBoundary": false,
@@ -1298,7 +1298,7 @@
               "trustBoundaryIds": []
             },
             "labels": [
-              "F7. Metadata + log (tanpa isi file)"
+              "F7"
             ],
             "id": "52a12e28-8739-416e-b53b-5d838169e913",
             "source": {
@@ -1340,7 +1340,7 @@
             "connector": "smooth",
             "data": {
               "type": "tm.Flow",
-              "name": "F8. Metadata + data/status tautan",
+              "name": "F8",
               "description": "Tulis identitas pemilik, nama/tipe/waktu unggah, referensi objek, ID tautan, masa berlaku 24 jam dan status pencabutan.",
               "outOfScope": false,
               "isTrustBoundary": false,
@@ -1410,7 +1410,7 @@
             "connector": "smooth",
             "data": {
               "type": "tm.Flow",
-              "name": "F9. Hasil baca metadata/validasi",
+              "name": "F9",
               "description": "Data kepemilikan file, daftar tautan, waktu kedaluwarsa dan status pencabutan untuk pemeriksaan backend.",
               "outOfScope": false,
               "isTrustBoundary": false,
@@ -1466,7 +1466,7 @@
             "connector": "smooth",
             "data": {
               "type": "tm.Flow",
-              "name": "F10. Tulis audit (buat/cabut/akses)",
+              "name": "F10",
               "description": "Catat waktu, ID tautan, jenis aksi (buat, cabut, gunakan) dan data audit yang relevan.",
               "outOfScope": false,
               "isTrustBoundary": false,
@@ -1522,7 +1522,7 @@
             "connector": "smooth",
             "data": {
               "type": "tm.Flow",
-              "name": "F11. Simpan / minta isi file",
+              "name": "F11",
               "description": "Isi file untuk disimpan, atau referensi objek yang diminta setelah izin unduh disetujui.",
               "outOfScope": false,
               "isTrustBoundary": false,
@@ -1578,7 +1578,7 @@
             "connector": "smooth",
             "data": {
               "type": "tm.Flow",
-              "name": "F12. Status simpan / isi file",
+              "name": "F12",
               "description": "Konfirmasi penyimpanan atau isi file yang diminta oleh backend.",
               "outOfScope": false,
               "isTrustBoundary": false,
