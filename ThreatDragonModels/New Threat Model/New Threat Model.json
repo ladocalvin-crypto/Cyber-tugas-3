@@ -249,8 +249,8 @@
           },
           {
             "position": {
-              "x": 480,
-              "y": -390
+              "x": 460,
+              "y": -140
             },
             "size": {
               "width": 112.5,
@@ -265,6 +265,7 @@
             },
             "visible": true,
             "shape": "actor",
+            "zIndex": 3,
             "ports": {
               "groups": {
                 "top": {
@@ -348,7 +349,6 @@
               ]
             },
             "id": "1f077c11-c384-4048-8a37-74f908dfdddd",
-            "zIndex": 3,
             "data": {
               "type": "tm.Actor",
               "name": "Actor",
@@ -363,8 +363,8 @@
           },
           {
             "position": {
-              "x": 750,
-              "y": -490
+              "x": 550,
+              "y": -320
             },
             "size": {
               "width": 60,
@@ -379,6 +379,7 @@
             },
             "visible": true,
             "shape": "process",
+            "zIndex": 4,
             "ports": {
               "groups": {
                 "top": {
@@ -462,7 +463,6 @@
               ]
             },
             "id": "f102dba5-ed8a-46d6-b147-3b961ad9744a",
-            "zIndex": 4,
             "data": {
               "type": "tm.Process",
               "name": "Process",
@@ -476,13 +476,6 @@
               "isWebApplication": false,
               "privilegeLevel": "",
               "threats": []
-            },
-            "tools": {
-              "items": [
-                "boundary",
-                "button-remove"
-              ],
-              "name": null
             }
           }
         ]
