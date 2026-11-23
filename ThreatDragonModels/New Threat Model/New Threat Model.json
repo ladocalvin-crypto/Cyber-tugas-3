@@ -696,13 +696,27 @@
               "outOfScope": false,
               "isTrustBoundary": false,
               "reasonOutOfScope": "",
-              "hasOpenThreats": false,
+              "hasOpenThreats": true,
               "isALog": false,
               "isEncrypted": false,
               "isSigned": false,
               "storesCredentials": false,
               "storesInventory": false,
-              "threats": []
+              "threats": [
+                {
+                  "id": "d963d0c8-603a-47f1-946c-d250c817c241",
+                  "title": "I2 - Akses langsung ke Object Storage tanpa otorisasi",
+                  "status": "Open",
+                  "severity": "High",
+                  "type": "Information disclosure",
+                  "modelType": "STRIDE",
+                  "description": "Jika Object Storage salah dikonfigurasi sebagai publik atau kredensial akses storage memiliki izin terlalu luas, pihak yang tidak berwenang dapat mengambil isi file langsung tanpa pemeriksaan token, masa berlaku 24 jam, dan status pencabutan oleh Backend Dokumen. Syarat: terjadi kesalahan konfigurasi atau penyalahgunaan izin; bukan berarti kondisi ini sudah terjadi. Kemungkinan 2/3, dampak 3/3, skor 6/9.",
+                  "mitigation": "Jadikan bucket dan objek privat; blok akses anonim/publik; terapkan least privilege pada akun layanan storage, audit kebijakan akses, dan pastikan unduhan harus melewati otorisasi Backend Dokumen. Uji bahwa URL objek mentah tidak dapat digunakan tanpa izin.",
+                  "new": false,
+                  "number": 16,
+                  "score": "2 x 3 = 6 (Tinggi)"
+                }
+              ]
             }
           },
           {
@@ -857,12 +871,26 @@
               "outOfScope": false,
               "isTrustBoundary": false,
               "reasonOutOfScope": "",
-              "hasOpenThreats": false,
+              "hasOpenThreats": true,
               "handlesCardPayment": false,
               "handlesGoodsOrServices": false,
               "isWebApplication": true,
               "privilegeLevel": "Hak baca/tulis metadata dan file hanya melalui API sesuai kebutuhan proses",
-              "threats": []
+              "threats": [
+                {
+                  "id": "c7379cfb-3733-4e70-a332-051b25e6f17b",
+                  "title": "E2 - Admin memperoleh hak unduh file di luar kewenangan",
+                  "status": "Open",
+                  "severity": "High",
+                  "type": "Elevation of privilege",
+                  "modelType": "STRIDE",
+                  "description": "Jika endpoint unduh atau API pengambilan file hanya memeriksa bahwa pengguna merupakan admin tanpa memeriksa hak baca isi dokumen, Admin Organisasi yang seharusnya hanya meninjau metadata dan audit log dapat memperoleh isi file milik pemilik dokumen. Syarat: otorisasi pada endpoint file tidak membedakan izin melihat metadata dan izin mengunduh isi file. Kemungkinan 2/3, dampak 3/3, skor 6/9.",
+                  "mitigation": "Terapkan otorisasi per peran dan per objek pada setiap endpoint unduh; hak admin untuk membaca metadata/log tidak memberikan hak membaca isi file. Validasi pemilik atau tautan berbagi yang sah sebelum mengakses Object Storage; uji negatif permintaan unduh oleh admin tanpa izin.",
+                  "new": false,
+                  "number": 17,
+                  "score": "2 x 3 = 6 (Tinggi)"
+                }
+              ]
             },
             "tools": {
               "items": [
@@ -1718,6 +1746,6 @@
     ],
     "diagramTop": 1,
     "reviewer": "",
-    "threatTop": 15
+    "threatTop": 17
   }
 }
