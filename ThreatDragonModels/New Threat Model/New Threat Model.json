@@ -940,7 +940,7 @@
               "trustBoundaryIds": []
             },
             "labels": [
-              "F1. Unggah file + sesi pemilik"
+              "F1"
             ],
             "id": "026733a8-5c7f-429e-88db-f263f6543401",
             "source": {
@@ -996,7 +996,7 @@
               "trustBoundaryIds": []
             },
             "labels": [
-              "F2. Buat / tinjau / cabut tautan"
+              "F2"
             ],
             "id": "8dc99c26-c388-48e2-8849-3fe6ba601271",
             "source": {
@@ -1052,7 +1052,7 @@
               "trustBoundaryIds": []
             },
             "labels": [
-              " F3. Status tauatan : aktif/nonakti"
+              " F3"
             ],
             "id": "816833a3-47d2-40d2-b283-b503443616f2",
             "source": {
@@ -1122,7 +1122,7 @@
               "trustBoundaryIds": []
             },
             "labels": [
-              "F4. Token + akses unduh tanpa login"
+              "F4"
             ],
             "id": "3ffe9d7b-69de-458b-aff4-7da6fd6c9319",
             "source": {
@@ -1182,7 +1182,7 @@
               "trustBoundaryIds": []
             },
             "labels": [
-              "F5. File / akses ditolak"
+              "F5"
             ],
             "id": "7d2f6bb6-8421-4bd9-82b2-c086b5a095d4",
             "source": {
@@ -1238,7 +1238,7 @@
               "trustBoundaryIds": []
             },
             "labels": [
-              "F6. Permintaan metadata + audit log"
+              "F6"
             ],
             "id": "7889da00-8628-491d-bad3-38af6b839a24",
             "source": {
@@ -1368,7 +1368,7 @@
               "trustBoundaryIds": []
             },
             "labels": [
-              "F8. Metadata + data/status tautan"
+              "F8"
             ],
             "id": "9bdcfd1f-c593-458e-9f37-043c191c1d12",
             "source": {
@@ -1424,7 +1424,7 @@
               "trustBoundaryIds": []
             },
             "labels": [
-              "F9. Hasil baca metadata/validasi"
+              "F9"
             ],
             "id": "fc7e70df-f783-42d9-b4f1-f3217113daaf",
             "source": {
@@ -1480,7 +1480,7 @@
               "trustBoundaryIds": []
             },
             "labels": [
-              "F10. Tulis audit (buat/cabut/akses)"
+              "F10"
             ],
             "id": "b35dbf98-7c11-429b-a15f-fc814c9fa9ce",
             "source": {
@@ -1536,7 +1536,7 @@
               "trustBoundaryIds": []
             },
             "labels": [
-              "F11. Simpan / minta isi file"
+              "F11"
             ],
             "id": "582398c8-d974-48e7-9582-e7c442e5c8a0",
             "source": {
@@ -1592,7 +1592,7 @@
               "trustBoundaryIds": []
             },
             "labels": [
-              "F12. Status simpan / isi file"
+              "F12"
             ],
             "id": "01055c12-14be-46b5-9619-f624f668ea9b",
             "source": {
