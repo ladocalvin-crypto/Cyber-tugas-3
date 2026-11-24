@@ -39,7 +39,7 @@
             "data": {
               "type": "tm.BoundaryBox",
               "name": "TB1 - Publik / Browser",
-              "description": "Zona dengan tingkat kepercayaan terpisah; semua aliran yang masuk/keluar memerlukan validasi keamanan yang sesuai.",
+              "description": "Zona publik/client yang memuat browser Pemilik Dokumen, Admin Organisasi, dan Penerima Eksternal. Permintaan dan respons F1-F7 melintasi batas antara browser dan backend. Browser tidak dianggap sebagai sumber otorisasi tepercaya; backend perlu memverifikasi sesi, peran, kepemilikan, dan token yang relevan. Penerima tidak wajib login.",
               "isTrustBoundary": true,
               "hasOpenThreats": false
             }
@@ -64,7 +64,7 @@
             "data": {
               "type": "tm.BoundaryBox",
               "name": "TB2 - Aplikasi / Backend",
-              "description": "Zona dengan tingkat kepercayaan terpisah; semua aliran yang masuk/keluar memerlukan validasi keamanan yang sesuai.",
+              "description": "Zona aplikasi yang memuat Backend Dokumen sebagai perantara dan titik keputusan otorisasi. Batas kepercayaan terlintasi ketika backend menerima atau mengembalikan data kepada aktor (F1-F7) dan berkomunikasi dengan penyimpanan (F8-F12). Pemisahan zona bersifat logis; topologi jaringan fisik belum ditentukan dalam kasus.",
               "isTrustBoundary": true,
               "hasOpenThreats": false
             }
@@ -89,7 +89,7 @@
             "data": {
               "type": "tm.BoundaryBox",
               "name": "TB3 - Penyimpanan",
-              "description": "Zona dengan tingkat kepercayaan terpisah; semua aliran yang masuk/keluar memerlukan validasi keamanan yang sesuai.",
+              "description": "Zona penyimpanan yang memuat Database Metadata dan Object Storage. F8-F10 menghubungkan backend dengan metadata dan audit log; F11-F12 menghubungkan backend dengan isi file. Diasumsikan hanya layanan yang berwenang dapat mengakses penyimpanan. Akses publik langsung, kebijakan izin, dan perlindungan integritas perlu diverifikasi.",
               "isTrustBoundary": true,
               "hasOpenThreats": false
             }
@@ -206,7 +206,7 @@
             "data": {
               "type": "tm.Actor",
               "name": "Pemilik Dokumen (akun)",
-              "description": "Pengguna yang memiliki akun, mengunggah file, membuat, meninjau dan mencabut tautan miliknya.",
+              "description": "Aktor eksternal yang mengakses aplikasi melalui browser menggunakan akun miliknya. Pemilik mengunggah file (F1), meminta pembuatan tautan berbagi yang berlaku 24 jam, meninjau daftar tautan aktif, dan mencabut tautan sebelum kedaluwarsa (F2). Pemilik menerima hasil unggah, tautan, daftar tautan, dan status pencabutan (F3). Tautan disampaikan kepada penerima melalui saluran di luar aplikasi; proses pengiriman tersebut tidak termasuk lingkup DFD. Pemilik hanya berwenang mengelola dokumen dan tautan miliknya. Mekanisme autentikasi dan verifikasi kepemilikan merupakan asumsi desain yang perlu diverifikasi; pemilik tidak berinteraksi langsung dengan database atau Object Storage.",
               "isTrustBoundary": false,
               "outOfScope": false,
               "reasonOutOfScope": "",
@@ -323,7 +323,7 @@
             "data": {
               "type": "tm.Actor",
               "name": "Admin Organisasi",
-              "description": "Dapat meninjau metadata dan audit log, tetapi tidak berhak mengakses isi file secara default.",
+              "description": "Aktor yang menggunakan browser untuk meninjau informasi dokumen dan aktivitas berbagi dalam organisasi. Admin meminta metadata dan audit log melalui F6, lalu menerima hasil peninjauan melalui F7. Metadata meliputi identitas pemilik, nama, tipe, dan waktu unggah file; audit log meliputi catatan pembuatan, pencabutan, serta penggunaan tautan. Admin bukan komponen yang mencatat aktivitas; pencatatan dilakukan oleh backend. Secara default admin tidak memiliki hak membaca atau mengunduh isi file dan tidak diberi kewenangan mengubah dokumen atau tautan pengguna lain dalam lingkup kasus ini. Diasumsikan admin menggunakan akun yang terautentikasi dan memiliki izin peninjauan yang diverifikasi oleh backend.",
               "isTrustBoundary": false,
               "outOfScope": false,
               "reasonOutOfScope": "",
@@ -440,7 +440,7 @@
             "data": {
               "type": "tm.Actor",
               "name": "Penerima eksternal (tanpa login)",
-              "description": "Pihak internal atau eksternal yang membuka tautan berbagi dari browser tanpa login.",
+              "description": "Aktor yang menerima tautan berbagi dari pemilik melalui saluran di luar aplikasi. Penerima membuka tautan menggunakan browser tanpa diwajibkan login, lalu mengirim identitas/token tautan untuk meminta halaman akses atau pengunduhan melalui F4. Penerima menerima hasil validasi dan isi file jika diizinkan melalui F5, atau menerima penolakan jika tautan tidak sah, sudah kedaluwarsa, atau dicabut. Penerima tidak mengakses database atau Object Storage secara langsung. Diasumsikan token berfungsi sebagai bukti akses berbasis kepemilikan tautan (bearer token), bukan bukti identitas pribadi penerima; karena itu siapa pun yang memperoleh token aktif berpotensi menggunakannya.",
               "isTrustBoundary": false,
               "outOfScope": false,
               "reasonOutOfScope": "",
@@ -566,7 +566,7 @@
             "data": {
               "type": "tm.Store",
               "name": "Database Metadata",
-              "description": "Menyimpan identitas pemilik, nama file, tipe file, waktu unggah, referensi objek, ID/token tautan, waktu kedaluwarsa, status pencabutan, dan audit log.",
+              "description": "Penyimpanan data terstruktur yang terpisah dari penyimpanan isi file. Menyimpan identitas pemilik, nama file, tipe file, waktu unggah, informasi tautan, masa berlaku 24 jam, status pencabutan, dan audit log. Diasumsikan metadata juga menyimpan referensi objek untuk menghubungkan dokumen dengan file di Object Storage. F8 membawa data yang ditulis atau diperbarui oleh backend, F9 mengembalikan metadata, status tautan, dan data audit yang diminta, sedangkan F10 membawa catatan aktivitas pembuatan, pencabutan, serta penggunaan tautan. Database menyediakan data bagi backend; keputusan pemberian akses tetap dibuat oleh backend. Format penyimpanan token tidak ditetapkan dalam soal; token rahasia sebaiknya tidak disimpan mentah di audit log. Database tidak menyimpan isi file dan tidak diakses langsung oleh aktor.",
               "outOfScope": false,
               "isTrustBoundary": false,
               "reasonOutOfScope": "",
@@ -692,7 +692,7 @@
             "data": {
               "type": "tm.Store",
               "name": "Object Storage",
-              "description": "Menyimpan isi file dokumen, terpisah dari Database Metadata. Diasumsikan tidak menyediakan akses publik langsung.",
+              "description": "Penyimpanan objek yang berisi file dokumen yang diunggah pemilik, terpisah dari Database Metadata. Melalui F11, backend mengirimkan isi file dan referensi objek untuk penyimpanan atau meminta file berdasarkan referensi objek setelah otorisasi. Melalui F12, Object Storage mengembalikan isi file atau status operasi penyimpanan kepada backend. Object Storage tidak menentukan masa berlaku tautan atau hak akses pengguna aplikasi; keputusan tersebut dilakukan backend. Diasumsikan objek tidak tersedia secara publik dan akses penyimpanan diberikan hanya kepada layanan yang berwenang. Kerahasiaan dan integritas isi file menjadi aset utama yang harus dilindungi; konfigurasi izin, enkripsi, dan pemeriksaan integritas merupakan kontrol yang perlu diverifikasi, bukan fakta implementasi yang sudah diketahui.",
               "outOfScope": false,
               "isTrustBoundary": false,
               "reasonOutOfScope": "",
@@ -867,7 +867,7 @@
             "data": {
               "type": "tm.Process",
               "name": "Backend Dokumen",
-              "description": "Memvalidasi permintaan dan otorisasi kepemilikan, memeriksa token, tanggal kedaluwarsa dan status pencabutan, mengelola data dan merekam audit.",
+              "description": "Proses utama aplikasi web yang menjadi perantara antara ketiga aktor dan kedua penyimpanan. Backend menerima unggahan (F1), mengelola tautan (F2), dan mengembalikan hasil kepada pemilik (F3). Backend menerima permintaan penerima tanpa login (F4), memeriksa informasi tautan dari Database Metadata, lalu memberikan hasil akses atau file melalui F5. Untuk admin, backend menerima permintaan peninjauan (F6) dan mengembalikan metadata serta log (F7), tanpa memberikan hak membaca isi file secara otomatis. Backend menyimpan metadata dan informasi tautan (F8), membaca data tersebut (F9), mencatat aktivitas (F10), serta menyimpan atau meminta file (F11) dan menerima respons Object Storage (F12). Backend merupakan komponen yang memutuskan otorisasi berdasarkan identitas akun, kepemilikan, peran, serta status tautan. Diasumsikan waktu kedaluwarsa dihitung berdasarkan waktu server dan pencabutan diperiksa pada setiap permintaan unduh; penerapan kontrol keamanan tersebut belum dipastikan oleh soal.",
               "outOfScope": false,
               "isTrustBoundary": false,
               "reasonOutOfScope": "",
@@ -926,7 +926,7 @@
             "data": {
               "type": "tm.Flow",
               "name": "F1",
-              "description": "Unggah File Dokumen. Pemilik mengirim isi file serta identitas/sesi login untuk diunggah ke backend.",
+              "description": "Unggah File Dokumen | Pemilik Dokumen -> Backend Dokumen. Browser pemilik mengirim isi file yang hendak diunggah, nama dan tipe file, serta informasi sesi autentikasi. Backend mengidentifikasi pemilik berdasarkan akun yang terverifikasi, memproses unggahan, kemudian meneruskan isi file ke Object Storage melalui F11 dan menyimpan metadata melalui F8. Waktu unggah dicatat oleh backend; hasil operasi dikembalikan melalui F3. Aliran melintasi batas publik dan backend. Asumsi: pemilik harus terautentikasi; bentuk sesi dan mekanisme validasinya belum ditentukan dalam kasus.",
               "outOfScope": false,
               "isTrustBoundary": false,
               "reasonOutOfScope": "",
@@ -991,7 +991,7 @@
             "data": {
               "type": "tm.Flow",
               "name": "F2",
-              "description": "Permintaan Pengelolaan Tautan. Pemilik meminta pembuatan, peninjauan, atau pencabutan tautan berbagi dokumen miliknya.",
+              "description": "Permintaan Pengelolaan Tautan | Pemilik Dokumen -> Backend Dokumen. Pemilik meminta pembuatan tautan berbagi untuk suatu dokumen, peninjauan daftar tautan aktif, atau pencabutan tautan sebelum kedaluwarsa. Data dapat mencakup jenis operasi, ID dokumen atau ID tautan yang relevan, serta sesi pemilik. Backend memeriksa identitas dan kepemilikan objek, menetapkan masa berlaku 24 jam saat tautan dibuat, memperbarui informasi tautan melalui F8, serta mencatat pembuatan/pencabutan melalui F10. Hasil pengelolaan dikirim melalui F3. Aliran melintasi batas publik dan backend; ID objek dari browser bukan bukti kepemilikan.",
               "outOfScope": false,
               "isTrustBoundary": false,
               "reasonOutOfScope": "",
@@ -1056,7 +1056,7 @@
             "data": {
               "type": "tm.Flow",
               "name": "F3",
-              "description": "Pengembalian Status dan Daftar Tautan. Backend mengirim hasil unggah, tautan berbagi, status pencabutan, dan daftar tautan aktif kepada pemilik yang berhak.",
+              "description": "Pengembalian Status dan Daftar Tautan | Backend Dokumen -> Pemilik Dokumen. Backend mengirim hasil unggah atau hasil pengelolaan tautan kepada pemilik melalui browser. Data dapat mencakup status berhasil/gagal, tautan berbagi yang baru dibuat, daftar tautan aktif, informasi masa berlaku, atau hasil pencabutan, sesuai permintaan F1/F2. Backend hanya seharusnya mengembalikan data milik akun yang berwenang. Pengiriman tautan kepada penerima dilakukan oleh pemilik di luar aplikasi dan bukan bagian dari F3. Aliran melintasi batas backend dan publik.",
               "outOfScope": false,
               "isTrustBoundary": false,
               "reasonOutOfScope": "",
@@ -1107,7 +1107,7 @@
             "data": {
               "type": "tm.Flow",
               "name": "F4",
-              "description": "Permintaan Akses Dokumen (Tanpa Login). Penerima tanpa login membuka tautan dan mengirim identitas/token tautan untuk meminta akses/unduh.",
+              "description": "Permintaan Akses Dokumen | Penerima Eksternal -> Backend Dokumen. Penerima membuka tautan pada browser untuk meminta halaman akses dan kemudian mengajukan pengunduhan. Data yang dikirim adalah identitas/token tautan beserta informasi permintaan yang diperlukan, tanpa sesi login penerima yang diwajibkan. Backend membaca informasi tautan dari database melalui operasi baca yang hasilnya diterima pada F9, lalu memeriksa kecocokan tautan, masa berlaku 24 jam, serta status pencabutan. Jika sah, backend menampilkan opsi unduh dan memproses pengambilan file melalui F11 ketika diminta; jika tidak sah, backend menolak akses. Aliran melintasi batas publik dan backend. Asumsi: token bersifat bearer dan validasi diulangi saat unduh.",
               "outOfScope": false,
               "isTrustBoundary": false,
               "reasonOutOfScope": "",
@@ -1195,7 +1195,7 @@
             "data": {
               "type": "tm.Flow",
               "name": "F5",
-              "description": "Pengembalian Hasil Akses dan File. Backend menyalurkan isi file yang diizinkan atau respons penolakan akses kepada penerima.",
+              "description": "Pengembalian Hasil Akses dan File | Backend Dokumen -> Penerima Eksternal. Backend mengembalikan hasil pemrosesan permintaan F4 melalui browser. Jika tautan valid, penerima mendapat halaman/opsi pengunduhan dan, ketika unduh diminta serta diizinkan, isi file yang diperoleh melalui F12. Jika tautan tidak valid, kedaluwarsa, atau dicabut, backend mengembalikan respons penolakan tanpa isi file. Pengunduhan tetap diproses melalui backend, bukan akses langsung ke Object Storage. Aliran melintasi batas backend dan publik; bentuk respons dan mekanisme pengiriman file belum ditentukan dalam kasus.",
               "outOfScope": false,
               "isTrustBoundary": false,
               "reasonOutOfScope": "",
@@ -1256,7 +1256,7 @@
             "data": {
               "type": "tm.Flow",
               "name": "F6",
-              "description": "Permintaan Metadata dan Audit Log. Admin mengajukan permintaan peninjauan metadata dan audit log; tidak meminta isi file secara default.",
+              "description": "Permintaan Metadata dan Audit Log | Admin Organisasi -> Backend Dokumen. Admin meminta peninjauan metadata dokumen dan riwayat aktivitas berbagi, misalnya pembuatan, pencabutan, atau penggunaan tautan. Data yang dikirim mencakup permintaan peninjauan, sesi admin, dan jika diperlukan parameter penyaringan data (asumsi antarmuka). Backend harus memverifikasi identitas dan kewenangan admin sebelum membaca data yang dibutuhkan dari Database Metadata. F6 tidak meminta isi file secara default; hasil peninjauan dikirim melalui F7. Aliran melintasi batas publik dan backend. Autentikasi admin serta otorisasi berbasis peran merupakan asumsi desain yang harus diverifikasi.",
               "outOfScope": false,
               "isTrustBoundary": false,
               "reasonOutOfScope": "",
@@ -1344,7 +1344,7 @@
             "data": {
               "type": "tm.Flow",
               "name": "F7",
-              "description": "Pengembalian Metadata dan Audit Log. Backend menampilkan metadata dan audit log kepada admin; token rahasia dan isi file tidak seharusnya disertakan.",
+              "description": "Pengembalian Metadata dan Audit Log | Backend Dokumen -> Admin Organisasi. Setelah memproses F6 dan memperoleh data dari Database Metadata, backend mengirim hasil peninjauan kepada admin melalui browser. Data mencakup metadata dokumen (pemilik, nama, tipe, waktu unggah) serta riwayat pembuatan, pencabutan, dan penggunaan tautan. Respons bukan permintaan audit log baru dan tidak seharusnya memuat isi file atau kredensial/token aktif. Hak membaca log tidak sama dengan hak mengunduh file. Aliran melintasi batas backend dan publik. Asumsi untuk ancaman kebocoran: jika log menyimpan token mentah dan respons tidak meredaksinya, admin dapat memperoleh akses tidak langsung ke dokumen.",
               "outOfScope": false,
               "isTrustBoundary": false,
               "reasonOutOfScope": "",
@@ -1419,7 +1419,7 @@
             "data": {
               "type": "tm.Flow",
               "name": "F8",
-              "description": "Penyimpanan Metadata dan Informasi Tautan. Backend menyimpan nama file, tipe, pemilik, waktu unggah, identitas tautan, kedaluwarsa 24 jam, dan status pencabutan.",
+              "description": "Penyimpanan Metadata dan Informasi Tautan | Backend Dokumen -> Database Metadata. Backend menulis atau memperbarui data terstruktur ketika file diunggah dan tautan dikelola. Data mencakup identitas pemilik, nama file, tipe file, waktu unggah, referensi objek (asumsi), identitas tautan, waktu kedaluwarsa, dan status pencabutan. Masa berlaku seharusnya ditetapkan 24 jam berdasarkan waktu server, dan pembaruan status harus sesuai kewenangan pemilik. F8 tidak membawa isi file dan tidak menggantikan audit log F10: F8 menyimpan data serta keadaan terkini, sedangkan F10 menyimpan riwayat peristiwa. Aliran melintasi batas backend dan penyimpanan. Format penyimpanan token belum ditentukan.",
               "outOfScope": false,
               "isTrustBoundary": false,
               "reasonOutOfScope": "",
@@ -1494,7 +1494,7 @@
             "data": {
               "type": "tm.Flow",
               "name": "F9",
-              "description": "Pengembalian Metadata dan Status Tautan. Database mengembalikan metadata, identitas tautan, masa berlaku, dan status pencabutan untuk keputusan backend.",
+              "description": "Pengembalian Metadata dan Status Tautan | Database Metadata -> Backend Dokumen. Database mengembalikan hasil pembacaan data yang dibutuhkan backend, antara lain metadata dokumen, referensi objek (asumsi), informasi masa berlaku dan status pencabutan, daftar tautan, atau catatan audit untuk peninjauan admin. Backend menggunakan data tersebut untuk menanggapi permintaan pemilik, memvalidasi akses penerima, dan memenuhi permintaan admin. Database menyediakan fakta status yang tersimpan; backend yang membuat keputusan otorisasi. Aliran ini adalah respons pembacaan, bukan operasi tulis F8 atau pencatatan F10. Permintaan baca dari backend tidak digambar sebagai flow terpisah dalam model 12 flow ini. Aliran melintasi batas penyimpanan dan backend.",
               "outOfScope": false,
               "isTrustBoundary": false,
               "reasonOutOfScope": "",
@@ -1555,7 +1555,7 @@
             "data": {
               "type": "tm.Flow",
               "name": "F10",
-              "description": "Pencatatan Aktivitas ke Audit Log. Backend mencatat peristiwa pembuatan, pencabutan, serta penggunaan tautan ke log audit di Database Metadata.",
+              "description": "Pencatatan Aktivitas ke Audit Log | Backend Dokumen -> Database Metadata. Backend secara otomatis mencatat peristiwa pembuatan, pencabutan, dan penggunaan tautan. Data log yang direkomendasikan meliputi ID tautan internal, jenis aktivitas, waktu server, identitas akun jika terautentikasi, dan hasil operasi; rincian format log belum ditetapkan oleh soal. Audit log berfungsi sebagai riwayat untuk penelusuran dan peninjauan oleh admin melalui F6/F7, bukan sebagai penyimpanan status tautan saat ini. Untuk penerima tanpa login, catatan penggunaan tautan tidak membuktikan identitas pribadi penerima. Token aktif tidak seharusnya dicatat mentah. Aliran melintasi batas backend dan penyimpanan.",
               "outOfScope": false,
               "isTrustBoundary": false,
               "reasonOutOfScope": "",
@@ -1630,7 +1630,7 @@
             "data": {
               "type": "tm.Flow",
               "name": "F11",
-              "description": "Penyimpanan dan Permintaan File. Backend mengirim file untuk disimpan atau mengirim permintaan pengambilan objek setelah memvalidasi akses.",
+              "description": "Penyimpanan dan Permintaan File | Backend Dokumen -> Object Storage. Pada proses unggah, backend meneruskan isi file beserta identitas/referensi objek yang diperlukan agar dokumen dapat disimpan. Pada proses unduh, setelah memvalidasi akses, backend mengirim permintaan pengambilan file berdasarkan referensi objek yang sesuai. Isi file disimpan di Object Storage, sementara metadata dan informasi tautan disimpan melalui F8. Object Storage mengirim hasil operasi melalui F12. Aliran melintasi batas backend dan penyimpanan. Ancaman yang dipilih berfokus pada perubahan isi dokumen saat proses penyimpanan atau penimpaan objek tanpa izin; mekanisme izin tulis dan verifikasi integritas belum ditetapkan dalam kasus.",
               "outOfScope": false,
               "isTrustBoundary": false,
               "reasonOutOfScope": "",
@@ -1705,7 +1705,7 @@
             "data": {
               "type": "tm.Flow",
               "name": "F12",
-              "description": "Pengembalian File dan Status Penyimpanan. Object Storage mengembalikan isi file saat diminta atau status berhasil/gagal menyimpan file kepada backend.",
+              "description": "Pengembalian File dan Status Penyimpanan | Object Storage -> Backend Dokumen. Setelah menerima F11, Object Storage mengembalikan hasil operasi kepada backend. Untuk penyimpanan, respons dapat berisi status berhasil/gagal dan referensi objek; untuk pengambilan, respons berisi isi file yang diminta atau pesan kegagalan jika file tidak tersedia. Backend menggunakan hasil ini untuk memproses respons unggah kepada pemilik melalui F3 atau meneruskan isi file kepada penerima yang telah diizinkan melalui F5. F12 tidak menentukan hak akses penerima dan tidak mengirim file langsung ke browser. Aliran melintasi batas penyimpanan dan backend; rincian protokol dan format respons merupakan asumsi implementasi.",
               "outOfScope": false,
               "isTrustBoundary": false,
               "reasonOutOfScope": "",
