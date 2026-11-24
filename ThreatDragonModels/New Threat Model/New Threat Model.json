@@ -5,7 +5,7 @@
   "summary": {
     "title": "Sistem Berbagi Dokumen",
     "owner": "nadia",
-    "description": "Sistem web organisasi untuk berbagi dokumen melalui tautan sementara selama 24 jam. Pemilik yang memiliki akun mengunggah file; Backend Dokumen menyimpan isi file di Object Storage dan menyimpan pemilik, nama, tipe, waktu unggah, serta data tautan di Database Metadata. Pemilik membuat, meninjau, atau mencabut tautan; penerima eksternal dapat mengajukan unduhan melalui browser tanpa login; backend memeriksa masa berlaku dan pencabutan sebelum meneruskan isi file. Pembuatan, pencabutan, dan penggunaan tautan dicatat sebagai audit log; admin hanya meninjau metadata dan log secara default. Cakupan: unggah, pengelolaan tautan, akses/unduh, audit, dan peninjauan admin. Di luar cakupan: pengiriman email/pesan dan sinkronisasi perangkat. Asumsi yang perlu diuji: pemilik dan admin terautentikasi; token acak sulit ditebak; HTTPS digunakan; waktu kedaluwarsa ditentukan oleh server; akses Object Storage tidak terbuka publik; pencabutan langsung berlaku untuk permintaan berikutnya. Asumsi tersebut bukan klaim bahwa kontrol telah diterapkan.",
+    "description": "Sistem berbasis web ini digunakan oleh organisasi untuk berbagi dokumen melalui tautan sementara yang berlaku selama 24 jam. Pemilik dokumen mengunggah file melalui akun yang dimilikinya. Backend Dokumen menyimpan isi file pada Object Storage; metadata dokumen dan informasi tautan disimpan pada Database Metadata. Pemilik dapat membuat, meninjau, dan mencabut tautan. Penerima dapat mengakses dokumen tanpa melakukan login setelah backend memeriksa masa berlaku dan status pencabutan tautan. Aktivitas pembuatan, pencabutan, dan penggunaan tautan dicatat dalam audit log. Admin Organisasi berwenang meninjau metadata dan audit log, tetapi tidak memiliki hak akses terhadap isi dokumen secara default. Ruang lingkup analisis meliputi unggah, pengelolaan tautan, akses, pengunduhan, dan pencatatan aktivitas; pengiriman pesan atau surel serta sinkronisasi perangkat berada di luar lingkup analisis. Asumsi perancangan meliputi autentikasi pemilik dan admin, penggunaan token acak, komunikasi HTTPS, penentuan waktu kedaluwarsa berdasarkan waktu server, penyimpanan privat, serta pemberlakuan pencabutan pada permintaan akses berikutnya. Penerapan asumsi tersebut masih perlu diverifikasi.",
     "id": 0
   },
   "detail": {
@@ -13,7 +13,7 @@
     "diagrams": [
       {
         "id": 0,
-        "title": "DFD Kasus B - Berbagi Dokumen via Tautan 24 Jam",
+        "title": "DFD Kasus B: Sistem Berbagi Dokumen melalui Tautan Sementara",
         "diagramType": "STRIDE",
         "placeholder": "DFD dan ancaman STRIDE untuk Kasus B",
         "thumbnail": "./public/content/images/thumbnail.stride.jpg",
@@ -38,8 +38,8 @@
             "zIndex": -1,
             "data": {
               "type": "tm.BoundaryBox",
-              "name": "TB1 - Publik / Browser",
-              "description": "Zona publik/client yang memuat browser Pemilik Dokumen, Admin Organisasi, dan Penerima Eksternal. Permintaan dan respons F1-F7 melintasi batas antara browser dan backend. Browser tidak dianggap sebagai sumber otorisasi tepercaya; backend perlu memverifikasi sesi, peran, kepemilikan, dan token yang relevan. Penerima tidak wajib login.",
+              "name": "TB1: Publik dan Browser",
+              "description": "Area publik mencakup browser Pemilik Dokumen, Admin Organisasi, dan Penerima Eksternal. Komunikasi pada F1 hingga F7 melintasi batas kepercayaan antara area publik dan backend. Data yang berasal dari browser tidak dapat dijadikan dasar otorisasi tanpa pemeriksaan; backend perlu memvalidasi sesi, peran, kepemilikan dokumen, dan token sesuai jenis permintaan. Penerima tidak diwajibkan melakukan login.",
               "isTrustBoundary": true,
               "hasOpenThreats": false
             }
@@ -63,8 +63,8 @@
             "zIndex": -1,
             "data": {
               "type": "tm.BoundaryBox",
-              "name": "TB2 - Aplikasi / Backend",
-              "description": "Zona aplikasi yang memuat Backend Dokumen sebagai perantara dan titik keputusan otorisasi. Batas kepercayaan terlintasi ketika backend menerima atau mengembalikan data kepada aktor (F1-F7) dan berkomunikasi dengan penyimpanan (F8-F12). Pemisahan zona bersifat logis; topologi jaringan fisik belum ditentukan dalam kasus.",
+              "name": "TB2: Aplikasi dan Backend",
+              "description": "Area aplikasi mencakup Backend Dokumen sebagai komponen pemrosesan dan pengambilan keputusan otorisasi. Komunikasi dengan aktor berlangsung melalui F1 hingga F7; komunikasi dengan penyimpanan berlangsung melalui F8 hingga F12. Pembagian area ini bersifat logis karena topologi jaringan fisik belum dijelaskan dalam studi kasus.",
               "isTrustBoundary": true,
               "hasOpenThreats": false
             }
@@ -88,8 +88,8 @@
             "zIndex": -1,
             "data": {
               "type": "tm.BoundaryBox",
-              "name": "TB3 - Penyimpanan",
-              "description": "Zona penyimpanan yang memuat Database Metadata dan Object Storage. F8-F10 menghubungkan backend dengan metadata dan audit log; F11-F12 menghubungkan backend dengan isi file. Diasumsikan hanya layanan yang berwenang dapat mengakses penyimpanan. Akses publik langsung, kebijakan izin, dan perlindungan integritas perlu diverifikasi.",
+              "name": "TB3: Penyimpanan",
+              "description": "Area penyimpanan mencakup Database Metadata dan Object Storage. Komunikasi dengan Database Metadata berlangsung melalui F8, F9, dan F10; komunikasi dengan Object Storage berlangsung melalui F11 dan F12. Akses penyimpanan diasumsikan terbatas pada layanan yang berwenang. Konfigurasi akses publik, izin penyimpanan, dan perlindungan integritas perlu diverifikasi.",
               "isTrustBoundary": true,
               "hasOpenThreats": false
             }
@@ -206,7 +206,7 @@
             "data": {
               "type": "tm.Actor",
               "name": "Pemilik Dokumen (akun)",
-              "description": "Aktor eksternal yang mengakses aplikasi melalui browser menggunakan akun miliknya. Pemilik mengunggah file (F1), meminta pembuatan tautan berbagi yang berlaku 24 jam, meninjau daftar tautan aktif, dan mencabut tautan sebelum kedaluwarsa (F2). Pemilik menerima hasil unggah, tautan, daftar tautan, dan status pencabutan (F3). Tautan disampaikan kepada penerima melalui saluran di luar aplikasi; proses pengiriman tersebut tidak termasuk lingkup DFD. Pemilik hanya berwenang mengelola dokumen dan tautan miliknya. Mekanisme autentikasi dan verifikasi kepemilikan merupakan asumsi desain yang perlu diverifikasi; pemilik tidak berinteraksi langsung dengan database atau Object Storage.",
+              "description": "Pemilik Dokumen merupakan pengguna yang memiliki akun untuk mengakses aplikasi melalui browser. Pemilik dapat mengunggah dokumen melalui F1 serta membuat tautan dengan masa berlaku 24 jam, meninjau daftar tautan aktif, dan mencabut tautan melalui F2. Hasil unggah dan pengelolaan tautan diterima melalui F3. Tautan disampaikan kepada penerima melalui saluran komunikasi di luar aplikasi. Pemilik hanya berwenang mengelola dokumen dan tautan miliknya; autentikasi dan pemeriksaan kepemilikan dilakukan oleh backend sebagai asumsi perancangan. Pemilik tidak berinteraksi langsung dengan Database Metadata maupun Object Storage.",
               "isTrustBoundary": false,
               "outOfScope": false,
               "reasonOutOfScope": "",
@@ -323,7 +323,7 @@
             "data": {
               "type": "tm.Actor",
               "name": "Admin Organisasi",
-              "description": "Aktor yang menggunakan browser untuk meninjau informasi dokumen dan aktivitas berbagi dalam organisasi. Admin meminta metadata dan audit log melalui F6, lalu menerima hasil peninjauan melalui F7. Metadata meliputi identitas pemilik, nama, tipe, dan waktu unggah file; audit log meliputi catatan pembuatan, pencabutan, serta penggunaan tautan. Admin bukan komponen yang mencatat aktivitas; pencatatan dilakukan oleh backend. Secara default admin tidak memiliki hak membaca atau mengunduh isi file dan tidak diberi kewenangan mengubah dokumen atau tautan pengguna lain dalam lingkup kasus ini. Diasumsikan admin menggunakan akun yang terautentikasi dan memiliki izin peninjauan yang diverifikasi oleh backend.",
+              "description": "Admin Organisasi merupakan aktor yang berwenang meninjau metadata dokumen dan riwayat aktivitas berbagi. Permintaan peninjauan disampaikan melalui F6; hasilnya diterima melalui F7. Metadata mencakup identitas pemilik, nama file, tipe file, dan waktu unggah. Audit log memuat riwayat pembuatan, pencabutan, dan penggunaan tautan. Pencatatan aktivitas dilakukan oleh backend, bukan oleh admin. Secara default, admin tidak memiliki hak untuk membaca atau mengunduh isi dokumen. Kewenangan mengubah dokumen atau tautan milik pengguna lain tidak ditetapkan dalam lingkup kasus. Admin diasumsikan menggunakan akun terautentikasi dengan hak peninjauan yang diperiksa oleh backend.",
               "isTrustBoundary": false,
               "outOfScope": false,
               "reasonOutOfScope": "",
@@ -440,7 +440,7 @@
             "data": {
               "type": "tm.Actor",
               "name": "Penerima eksternal (tanpa login)",
-              "description": "Aktor yang menerima tautan berbagi dari pemilik melalui saluran di luar aplikasi. Penerima membuka tautan menggunakan browser tanpa diwajibkan login, lalu mengirim identitas/token tautan untuk meminta halaman akses atau pengunduhan melalui F4. Penerima menerima hasil validasi dan isi file jika diizinkan melalui F5, atau menerima penolakan jika tautan tidak sah, sudah kedaluwarsa, atau dicabut. Penerima tidak mengakses database atau Object Storage secara langsung. Diasumsikan token berfungsi sebagai bukti akses berbasis kepemilikan tautan (bearer token), bukan bukti identitas pribadi penerima; karena itu siapa pun yang memperoleh token aktif berpotensi menggunakannya.",
+              "description": "Penerima Eksternal merupakan aktor yang memperoleh tautan berbagi dari pemilik melalui saluran komunikasi di luar aplikasi. Penerima membuka tautan menggunakan browser dan mengajukan permintaan akses melalui F4 tanpa diwajibkan melakukan login. Hasil pemeriksaan dan isi file yang diizinkan diterima melalui F5. Permintaan ditolak apabila tautan tidak sah, kedaluwarsa, atau telah dicabut. Penerima tidak mengakses penyimpanan secara langsung. Token diasumsikan sebagai bukti hak akses berdasarkan penguasaan tautan, bukan sebagai bukti identitas pribadi penerima; oleh karena itu, pihak lain yang memperoleh token aktif berpotensi menggunakannya.",
               "isTrustBoundary": false,
               "outOfScope": false,
               "reasonOutOfScope": "",
@@ -566,7 +566,7 @@
             "data": {
               "type": "tm.Store",
               "name": "Database Metadata",
-              "description": "Penyimpanan data terstruktur yang terpisah dari penyimpanan isi file. Menyimpan identitas pemilik, nama file, tipe file, waktu unggah, informasi tautan, masa berlaku 24 jam, status pencabutan, dan audit log. Diasumsikan metadata juga menyimpan referensi objek untuk menghubungkan dokumen dengan file di Object Storage. F8 membawa data yang ditulis atau diperbarui oleh backend, F9 mengembalikan metadata, status tautan, dan data audit yang diminta, sedangkan F10 membawa catatan aktivitas pembuatan, pencabutan, serta penggunaan tautan. Database menyediakan data bagi backend; keputusan pemberian akses tetap dibuat oleh backend. Format penyimpanan token tidak ditetapkan dalam soal; token rahasia sebaiknya tidak disimpan mentah di audit log. Database tidak menyimpan isi file dan tidak diakses langsung oleh aktor.",
+              "description": "Database Metadata menyimpan data terstruktur berupa identitas pemilik, nama file, tipe file, waktu unggah, identitas tautan, masa berlaku, status pencabutan, dan audit log. Referensi objek yang menghubungkan metadata dengan isi file pada Object Storage merupakan asumsi perancangan. Penyimpanan dan pembaruan data dilakukan melalui F8; hasil pembacaan data dikembalikan melalui F9; pencatatan aktivitas dilakukan melalui F10. Database menyediakan informasi yang diperlukan backend, sedangkan keputusan otorisasi tetap berada pada backend. Format penyimpanan token belum ditentukan dalam kasus. Token rahasia tidak seharusnya dicatat secara utuh dalam audit log. Database tidak menyimpan isi file dan tidak diakses langsung oleh aktor.",
               "outOfScope": false,
               "isTrustBoundary": false,
               "reasonOutOfScope": "",
@@ -692,7 +692,7 @@
             "data": {
               "type": "tm.Store",
               "name": "Object Storage",
-              "description": "Penyimpanan objek yang berisi file dokumen yang diunggah pemilik, terpisah dari Database Metadata. Melalui F11, backend mengirimkan isi file dan referensi objek untuk penyimpanan atau meminta file berdasarkan referensi objek setelah otorisasi. Melalui F12, Object Storage mengembalikan isi file atau status operasi penyimpanan kepada backend. Object Storage tidak menentukan masa berlaku tautan atau hak akses pengguna aplikasi; keputusan tersebut dilakukan backend. Diasumsikan objek tidak tersedia secara publik dan akses penyimpanan diberikan hanya kepada layanan yang berwenang. Kerahasiaan dan integritas isi file menjadi aset utama yang harus dilindungi; konfigurasi izin, enkripsi, dan pemeriksaan integritas merupakan kontrol yang perlu diverifikasi, bukan fakta implementasi yang sudah diketahui.",
+              "description": "Object Storage berfungsi menyimpan isi dokumen secara terpisah dari metadata. Backend mengirimkan file atau permintaan pengambilan file melalui F11; hasil operasi dan isi file dikembalikan melalui F12. Object Storage tidak menentukan masa berlaku tautan maupun hak akses pengguna aplikasi karena keputusan tersebut berada pada backend. Penyimpanan diasumsikan bersifat privat dan hanya dapat diakses oleh layanan yang berwenang. Kerahasiaan dan integritas dokumen merupakan aset utama yang harus dilindungi. Konfigurasi izin, enkripsi, dan pemeriksaan integritas masih perlu diverifikasi.",
               "outOfScope": false,
               "isTrustBoundary": false,
               "reasonOutOfScope": "",
@@ -705,13 +705,13 @@
               "threats": [
                 {
                   "id": "d963d0c8-603a-47f1-946c-d250c817c241",
-                  "title": "I2 - Akses langsung ke Object Storage tanpa otorisasi",
+                  "title": "I2: Akses langsung ke Object Storage tanpa otorisasi",
                   "status": "Open",
                   "severity": "High",
                   "type": "Information disclosure",
                   "modelType": "STRIDE",
-                  "description": "Jika Object Storage salah dikonfigurasi sebagai publik atau kredensial akses storage memiliki izin terlalu luas, pihak yang tidak berwenang dapat mengambil isi file langsung tanpa pemeriksaan token, masa berlaku 24 jam, dan status pencabutan oleh Backend Dokumen. Syarat: terjadi kesalahan konfigurasi atau penyalahgunaan izin; bukan berarti kondisi ini sudah terjadi. Kemungkinan 2/3, dampak 3/3, skor 6/9.",
-                  "mitigation": "Jadikan bucket dan objek privat; blok akses anonim/publik; terapkan least privilege pada akun layanan storage, audit kebijakan akses, dan pastikan unduhan harus melewati otorisasi Backend Dokumen. Uji bahwa URL objek mentah tidak dapat digunakan tanpa izin.",
+                  "description": "Apabila Object Storage dikonfigurasi sebagai penyimpanan publik atau kredensial layanan memiliki izin yang terlalu luas, pihak yang tidak berwenang dapat memperoleh isi file tanpa pemeriksaan token, masa berlaku, dan status pencabutan oleh backend. Kondisi ini mengancam kerahasiaan dokumen. Skenario tersebut bergantung pada kesalahan konfigurasi atau penyalahgunaan izin dan belum terbukti terjadi.\n\nPenilaian risiko: kemungkinan 2; dampak 3; skor 6 (Tinggi).",
+                  "mitigation": "Gunakan bucket dan objek privat serta nonaktifkan akses anonim dan publik. Terapkan prinsip hak akses minimum pada akun layanan, tinjau kebijakan akses, dan pastikan pengunduhan melalui otorisasi backend; uji bahwa alamat objek tidak dapat digunakan tanpa izin.",
                   "new": false,
                   "number": 16,
                   "score": "2 x 3 = 6 (Tinggi)"
@@ -867,7 +867,7 @@
             "data": {
               "type": "tm.Process",
               "name": "Backend Dokumen",
-              "description": "Proses utama aplikasi web yang menjadi perantara antara ketiga aktor dan kedua penyimpanan. Backend menerima unggahan (F1), mengelola tautan (F2), dan mengembalikan hasil kepada pemilik (F3). Backend menerima permintaan penerima tanpa login (F4), memeriksa informasi tautan dari Database Metadata, lalu memberikan hasil akses atau file melalui F5. Untuk admin, backend menerima permintaan peninjauan (F6) dan mengembalikan metadata serta log (F7), tanpa memberikan hak membaca isi file secara otomatis. Backend menyimpan metadata dan informasi tautan (F8), membaca data tersebut (F9), mencatat aktivitas (F10), serta menyimpan atau meminta file (F11) dan menerima respons Object Storage (F12). Backend merupakan komponen yang memutuskan otorisasi berdasarkan identitas akun, kepemilikan, peran, serta status tautan. Diasumsikan waktu kedaluwarsa dihitung berdasarkan waktu server dan pencabutan diperiksa pada setiap permintaan unduh; penerapan kontrol keamanan tersebut belum dipastikan oleh soal.",
+              "description": "Backend Dokumen merupakan komponen utama yang menghubungkan ketiga aktor dengan Database Metadata dan Object Storage. Backend menerima unggahan melalui F1, memproses pengelolaan tautan melalui F2, dan mengembalikan hasil melalui F3. Permintaan akses penerima diterima melalui F4; hasil pemeriksaan dan file yang diizinkan dikirim melalui F5. Permintaan peninjauan admin diterima melalui F6 dan hasilnya dikirim melalui F7. Backend menyimpan metadata melalui F8, menerima hasil pembacaan melalui F9, mencatat aktivitas melalui F10, serta berkomunikasi dengan Object Storage melalui F11 dan F12. Keputusan otorisasi didasarkan pada identitas akun, kepemilikan dokumen, peran pengguna, dan status tautan. Sebagai asumsi perancangan, waktu kedaluwarsa ditentukan berdasarkan waktu server dan status pencabutan diperiksa pada setiap permintaan unduh. Penerapan kontrol tersebut masih perlu diverifikasi.",
               "outOfScope": false,
               "isTrustBoundary": false,
               "reasonOutOfScope": "",
@@ -879,13 +879,13 @@
               "threats": [
                 {
                   "id": "c7379cfb-3733-4e70-a332-051b25e6f17b",
-                  "title": "E2 - Admin memperoleh hak unduh file di luar kewenangan",
+                  "title": "E2: Peningkatan hak akses admin terhadap isi dokumen",
                   "status": "Open",
                   "severity": "High",
                   "type": "Elevation of privilege",
                   "modelType": "STRIDE",
-                  "description": "Jika endpoint unduh atau API pengambilan file hanya memeriksa bahwa pengguna merupakan admin tanpa memeriksa hak baca isi dokumen, Admin Organisasi yang seharusnya hanya meninjau metadata dan audit log dapat memperoleh isi file milik pemilik dokumen. Syarat: otorisasi pada endpoint file tidak membedakan izin melihat metadata dan izin mengunduh isi file. Kemungkinan 2/3, dampak 3/3, skor 6/9.",
-                  "mitigation": "Terapkan otorisasi per peran dan per objek pada setiap endpoint unduh; hak admin untuk membaca metadata/log tidak memberikan hak membaca isi file. Validasi pemilik atau tautan berbagi yang sah sebelum mengakses Object Storage; uji negatif permintaan unduh oleh admin tanpa izin.",
+                  "description": "Apabila fungsi pengunduhan hanya memeriksa peran admin tanpa memeriksa hak membaca isi dokumen, Admin Organisasi dapat memperoleh file milik pengguna lain di luar kewenangannya. Kondisi ini terjadi apabila backend tidak membedakan izin peninjauan metadata dan audit log dari izin pengunduhan dokumen. Dampaknya adalah pelanggaran kerahasiaan dokumen.\n\nPenilaian risiko: kemungkinan 2; dampak 3; skor 6 (Tinggi).",
+                  "mitigation": "Terapkan otorisasi berdasarkan peran dan objek pada setiap permintaan unduh. Hak peninjauan metadata dan audit log tidak boleh otomatis memberikan hak membaca isi file; periksa kepemilikan atau tautan berbagi yang sah sebelum mengakses Object Storage. Uji penolakan terhadap permintaan unduh admin yang tidak memiliki izin.",
                   "new": false,
                   "number": 17,
                   "score": "2 x 3 = 6 (Tinggi)"
@@ -926,7 +926,7 @@
             "data": {
               "type": "tm.Flow",
               "name": "F1",
-              "description": "Unggah File Dokumen | Pemilik Dokumen -> Backend Dokumen. Browser pemilik mengirim isi file yang hendak diunggah, nama dan tipe file, serta informasi sesi autentikasi. Backend mengidentifikasi pemilik berdasarkan akun yang terverifikasi, memproses unggahan, kemudian meneruskan isi file ke Object Storage melalui F11 dan menyimpan metadata melalui F8. Waktu unggah dicatat oleh backend; hasil operasi dikembalikan melalui F3. Aliran melintasi batas publik dan backend. Asumsi: pemilik harus terautentikasi; bentuk sesi dan mekanisme validasinya belum ditentukan dalam kasus.",
+              "description": "F1: Unggah File Dokumen\n\nAliran ini berlangsung dari Pemilik Dokumen menuju Backend Dokumen. Browser mengirimkan isi file, nama file, tipe file, serta informasi sesi autentikasi. Backend mengidentifikasi pemilik berdasarkan akun terverifikasi, memproses unggahan, menyimpan isi file melalui F11, dan mencatat metadata melalui F8. Waktu unggah dicatat oleh backend; hasil operasi disampaikan melalui F3. Aliran ini melintasi batas kepercayaan antara area publik dan backend. Mekanisme autentikasi dan validasi sesi merupakan asumsi perancangan yang belum dijelaskan dalam kasus.",
               "outOfScope": false,
               "isTrustBoundary": false,
               "reasonOutOfScope": "",
@@ -938,13 +938,13 @@
               "threats": [
                 {
                   "id": "7d53c55b-c7a9-4ce5-9242-5e5bfdd40d00",
-                  "title": "S1 - Penyalahgunaan sesi pemilik untuk unggah dokumen",
+                  "title": "S1: Penyalahgunaan sesi pemilik untuk mengunggah dokumen",
                   "status": "Open",
                   "severity": "High",
                   "type": "Spoofing",
                   "modelType": "STRIDE",
-                  "description": "Jika penyerang memperoleh sesi login pemilik yang masih sah, penyerang dapat mengirim permintaan unggah pada F1 seolah-olah sebagai pemilik. Dokumen dapat disimpan menggunakan identitas pemilik tanpa izin. Asumsi: sesi pengguna dapat dicuri atau disalahgunakan. Kemungkinan 2/3, dampak 3/3, skor 6/9.",
-                  "mitigation": "Validasi sesi pemilik pada setiap permintaan unggah, gunakan HTTPS dan cookie HttpOnly/Secure/SameSite, tetapkan kedaluwarsa sesi, dan pertimbangkan MFA untuk akun pengguna.",
+                  "description": "Apabila penyerang memperoleh sesi autentikasi pemilik yang masih berlaku, permintaan unggah melalui F1 dapat dilakukan atas nama pemilik tanpa izin. Kondisi tersebut menyebabkan penyalahgunaan identitas pemilik dan memungkinkan penyimpanan dokumen yang tidak sah. Skenario ini mengasumsikan bahwa sesi dapat dicuri atau disalahgunakan.\n\nPenilaian risiko: kemungkinan 2; dampak 3; skor 6 (Tinggi).",
+                  "mitigation": "Validasi sesi pada setiap permintaan unggah. Gunakan HTTPS serta atribut cookie HttpOnly, Secure, dan SameSite; tetapkan masa berlaku sesi dan pertimbangkan autentikasi multifaktor (MFA).",
                   "new": false,
                   "number": 1,
                   "score": "2 x 3 = 6 (Tinggi)"
@@ -991,7 +991,7 @@
             "data": {
               "type": "tm.Flow",
               "name": "F2",
-              "description": "Permintaan Pengelolaan Tautan | Pemilik Dokumen -> Backend Dokumen. Pemilik meminta pembuatan tautan berbagi untuk suatu dokumen, peninjauan daftar tautan aktif, atau pencabutan tautan sebelum kedaluwarsa. Data dapat mencakup jenis operasi, ID dokumen atau ID tautan yang relevan, serta sesi pemilik. Backend memeriksa identitas dan kepemilikan objek, menetapkan masa berlaku 24 jam saat tautan dibuat, memperbarui informasi tautan melalui F8, serta mencatat pembuatan/pencabutan melalui F10. Hasil pengelolaan dikirim melalui F3. Aliran melintasi batas publik dan backend; ID objek dari browser bukan bukti kepemilikan.",
+              "description": "F2: Permintaan Pengelolaan Tautan\n\nAliran ini berlangsung dari Pemilik Dokumen menuju Backend Dokumen. Pemilik mengajukan permintaan pembuatan tautan, peninjauan daftar tautan aktif, atau pencabutan tautan sebelum kedaluwarsa. Data yang dikirim dapat mencakup jenis operasi, identitas dokumen atau tautan, serta sesi pemilik. Backend memeriksa identitas dan kepemilikan dokumen, menetapkan masa berlaku tautan selama 24 jam, memperbarui informasi melalui F8, serta mencatat pembuatan dan pencabutan melalui F10. Hasil pengelolaan dikembalikan melalui F3. Aliran ini melintasi batas kepercayaan antara area publik dan backend; identitas objek yang dikirim browser bukan bukti kepemilikan.",
               "outOfScope": false,
               "isTrustBoundary": false,
               "reasonOutOfScope": "",
@@ -1003,13 +1003,13 @@
               "threats": [
                 {
                   "id": "02af87e7-f468-48ed-8547-7a75f891b7c2",
-                  "title": "T1 - ID dokumen/tautan pada permintaan pemilik dimanipulasi",
+                  "title": "T1: Manipulasi identitas dokumen atau tautan pada permintaan pemilik",
                   "status": "Open",
                   "severity": "High",
                   "type": "Tampering",
                   "modelType": "STRIDE",
-                  "description": "Jika pengguna mengubah ID dokumen atau tautan pada permintaan F2 dan backend hanya mengecek login tanpa memverifikasi kepemilikan, pengguna dapat membuat, melihat, atau mencabut tautan dokumen milik orang lain. Asumsi: permintaan menyertakan identitas dokumen atau tautan. Kemungkinan 2/3, dampak 3/3, skor 6/9.",
-                  "mitigation": "Cocokkan pemilik dokumen dan tautan terhadap identitas akun dari sesi yang telah diverifikasi pada setiap request buat, daftar, dan cabut tautan; jangan mempercayai ID atau owner_id dari browser sebagai bukti otorisasi.",
+                  "description": "Apabila pengguna mengubah identitas dokumen atau tautan pada F2 dan backend tidak memeriksa kepemilikan, pengguna dapat membuat, melihat, atau mencabut tautan dokumen milik pihak lain. Kondisi tersebut menyebabkan pengelolaan dokumen tanpa izin. Skenario ini mengasumsikan bahwa permintaan memuat identitas dokumen atau tautan.\n\nPenilaian risiko: kemungkinan 2; dampak 3; skor 6 (Tinggi).",
+                  "mitigation": "Periksa kepemilikan dokumen dan tautan berdasarkan identitas akun terverifikasi pada setiap permintaan pembuatan, peninjauan, dan pencabutan. Identitas objek atau pemilik yang dikirim browser tidak boleh dijadikan bukti otorisasi.",
                   "new": false,
                   "number": 2,
                   "score": "2 x 3 = 6 (Tinggi)"
@@ -1056,7 +1056,7 @@
             "data": {
               "type": "tm.Flow",
               "name": "F3",
-              "description": "Pengembalian Status dan Daftar Tautan | Backend Dokumen -> Pemilik Dokumen. Backend mengirim hasil unggah atau hasil pengelolaan tautan kepada pemilik melalui browser. Data dapat mencakup status berhasil/gagal, tautan berbagi yang baru dibuat, daftar tautan aktif, informasi masa berlaku, atau hasil pencabutan, sesuai permintaan F1/F2. Backend hanya seharusnya mengembalikan data milik akun yang berwenang. Pengiriman tautan kepada penerima dilakukan oleh pemilik di luar aplikasi dan bukan bagian dari F3. Aliran melintasi batas backend dan publik.",
+              "description": "F3: Pengembalian Status dan Daftar Tautan\n\nAliran ini berlangsung dari Backend Dokumen menuju Pemilik Dokumen. Backend mengembalikan hasil unggah dan pengelolaan tautan sesuai permintaan F1 atau F2. Respons dapat mencakup status keberhasilan operasi, tautan yang dibuat, daftar tautan aktif, informasi masa berlaku, dan hasil pencabutan. Data hanya boleh diberikan kepada akun yang berwenang. Pengiriman tautan kepada penerima dilakukan oleh pemilik di luar aplikasi. Aliran ini melintasi batas kepercayaan antara backend dan area publik.",
               "outOfScope": false,
               "isTrustBoundary": false,
               "reasonOutOfScope": "",
@@ -1107,7 +1107,7 @@
             "data": {
               "type": "tm.Flow",
               "name": "F4",
-              "description": "Permintaan Akses Dokumen | Penerima Eksternal -> Backend Dokumen. Penerima membuka tautan pada browser untuk meminta halaman akses dan kemudian mengajukan pengunduhan. Data yang dikirim adalah identitas/token tautan beserta informasi permintaan yang diperlukan, tanpa sesi login penerima yang diwajibkan. Backend membaca informasi tautan dari database melalui operasi baca yang hasilnya diterima pada F9, lalu memeriksa kecocokan tautan, masa berlaku 24 jam, serta status pencabutan. Jika sah, backend menampilkan opsi unduh dan memproses pengambilan file melalui F11 ketika diminta; jika tidak sah, backend menolak akses. Aliran melintasi batas publik dan backend. Asumsi: token bersifat bearer dan validasi diulangi saat unduh.",
+              "description": "F4: Permintaan Akses Dokumen\n\nAliran ini berlangsung dari Penerima Eksternal menuju Backend Dokumen. Penerima membuka tautan melalui browser untuk meminta halaman akses dan mengajukan pengunduhan tanpa diwajibkan melakukan login. Data yang dikirim berupa identitas atau token tautan serta informasi permintaan yang diperlukan. Backend menggunakan hasil pembacaan Database Metadata pada F9 untuk memeriksa keabsahan tautan, masa berlaku, dan status pencabutan. Apabila tautan sah, backend menampilkan opsi unduh dan meminta file melalui F11 ketika pengunduhan diajukan; apabila tidak sah, permintaan ditolak. Aliran ini melintasi batas kepercayaan antara area publik dan backend. Token diasumsikan memberikan hak akses berdasarkan penguasaan tautan; validasi perlu dilakukan kembali pada saat pengunduhan.",
               "outOfScope": false,
               "isTrustBoundary": false,
               "reasonOutOfScope": "",
@@ -1119,26 +1119,26 @@
               "threats": [
                 {
                   "id": "f6a9ed97-194c-409e-b934-db248291bb82",
-                  "title": "I1 - Token tautan bocor ke pihak lain",
+                  "title": "I1: Kebocoran token tautan kepada pihak lain",
                   "status": "Open",
                   "severity": "High",
                   "type": "Information disclosure",
                   "modelType": "STRIDE",
-                  "description": "Jika token pada URL permintaan F4 bocor melalui log permintaan, referer, atau perantara yang tidak aman, siapa pun yang memilikinya dapat mencoba mengunduh dokumen tanpa login selama token masih aktif. Asumsi: tautan memakai bearer token. Kemungkinan 2/3, dampak 3/3, skor 6/9.",
-                  "mitigation": "Gunakan token acak berentropi tinggi, HTTPS, kebijakan Referrer-Policy yang ketat, jangan log token mentah, dan periksa masa berlaku 24 jam serta status pencabutan pada setiap permintaan.",
+                  "description": "Apabila token pada permintaan F4 bocor melalui log permintaan, informasi rujukan browser, atau perantara yang tidak aman, pihak lain dapat mengakses dokumen tanpa login selama tautan masih berlaku. Kondisi ini mengancam kerahasiaan dokumen. Skenario ini mengasumsikan penggunaan token yang memberikan akses berdasarkan penguasaan tautan.\n\nPenilaian risiko: kemungkinan 2; dampak 3; skor 6 (Tinggi).",
+                  "mitigation": "Gunakan token acak dengan entropi tinggi dan HTTPS. Terapkan kebijakan pembatasan informasi rujukan browser; hindari pencatatan token secara utuh dan periksa masa berlaku serta status pencabutan pada setiap permintaan.",
                   "new": false,
                   "number": 5,
                   "score": "2 x 3 = 6 (Tinggi)"
                 },
                 {
                   "id": "2dee1f3d-7efb-4eea-ac5b-95ba624475c4",
-                  "title": "D1 - Banjir permintaan akses dan unduh tanpa login",
+                  "title": "D1: Permintaan akses dan unduh secara berlebihan",
                   "status": "Open",
                   "severity": "High",
                   "type": "Denial of service",
                   "modelType": "STRIDE",
-                  "description": "Jika penyerang mengirim permintaan pembukaan tautan atau unduh secara berlebihan melalui F4 dan tidak ada pembatasan, backend dapat mengalami kehabisan koneksi, CPU, bandwidth, atau kapasitas baca storage. Kemungkinan 3/3, dampak 2/3, skor 6/9.",
-                  "mitigation": "Terapkan rate limiting pada endpoint tautan/unduh (misalnya per IP dan token), batas permintaan serentak, timeout, pemantauan lonjakan trafik, dan pembatasan penggunaan bandwidth/sumber daya; jangan mengandalkan login karena penerima tidak wajib login.",
+                  "description": "Apabila permintaan pembukaan tautan atau pengunduhan melalui F4 dikirim secara berlebihan tanpa pembatasan, kapasitas koneksi, pemrosesan, bandwidth, dan pembacaan penyimpanan dapat terkuras. Kondisi ini mengganggu ketersediaan layanan bagi pengguna yang sah.\n\nPenilaian risiko: kemungkinan 3; dampak 2; skor 6 (Tinggi).",
+                  "mitigation": "Terapkan pembatasan laju permintaan berdasarkan alamat IP dan token, batas koneksi serentak, batas waktu pemrosesan, pemantauan lalu lintas, serta pengendalian penggunaan bandwidth dan sumber daya. Pembatasan tidak boleh hanya bergantung pada login karena penerima tidak diwajibkan melakukan autentikasi.",
                   "new": false,
                   "number": 7,
                   "score": "3 x 2 = 6 (Tinggi)"
@@ -1195,7 +1195,7 @@
             "data": {
               "type": "tm.Flow",
               "name": "F5",
-              "description": "Pengembalian Hasil Akses dan File | Backend Dokumen -> Penerima Eksternal. Backend mengembalikan hasil pemrosesan permintaan F4 melalui browser. Jika tautan valid, penerima mendapat halaman/opsi pengunduhan dan, ketika unduh diminta serta diizinkan, isi file yang diperoleh melalui F12. Jika tautan tidak valid, kedaluwarsa, atau dicabut, backend mengembalikan respons penolakan tanpa isi file. Pengunduhan tetap diproses melalui backend, bukan akses langsung ke Object Storage. Aliran melintasi batas backend dan publik; bentuk respons dan mekanisme pengiriman file belum ditentukan dalam kasus.",
+              "description": "F5: Pengembalian Hasil Akses dan File\n\nAliran ini berlangsung dari Backend Dokumen menuju Penerima Eksternal. Backend mengembalikan hasil pemeriksaan permintaan F4. Apabila tautan valid, penerima memperoleh halaman atau opsi unduh. Ketika permintaan unduh diizinkan, backend meneruskan isi file yang diterima melalui F12; apabila tautan tidak sah, kedaluwarsa, atau dicabut, backend mengirimkan penolakan tanpa isi file. Pengunduhan diproses melalui backend dan tidak memberikan akses langsung ke Object Storage. Aliran ini melintasi batas kepercayaan antara backend dan area publik. Format respons dan mekanisme pengiriman file belum ditentukan dalam kasus.",
               "outOfScope": false,
               "isTrustBoundary": false,
               "reasonOutOfScope": "",
@@ -1256,7 +1256,7 @@
             "data": {
               "type": "tm.Flow",
               "name": "F6",
-              "description": "Permintaan Metadata dan Audit Log | Admin Organisasi -> Backend Dokumen. Admin meminta peninjauan metadata dokumen dan riwayat aktivitas berbagi, misalnya pembuatan, pencabutan, atau penggunaan tautan. Data yang dikirim mencakup permintaan peninjauan, sesi admin, dan jika diperlukan parameter penyaringan data (asumsi antarmuka). Backend harus memverifikasi identitas dan kewenangan admin sebelum membaca data yang dibutuhkan dari Database Metadata. F6 tidak meminta isi file secara default; hasil peninjauan dikirim melalui F7. Aliran melintasi batas publik dan backend. Autentikasi admin serta otorisasi berbasis peran merupakan asumsi desain yang harus diverifikasi.",
+              "description": "F6: Permintaan Metadata dan Audit Log\n\nAliran ini berlangsung dari Admin Organisasi menuju Backend Dokumen. Admin mengajukan permintaan peninjauan metadata dokumen dan riwayat pembuatan, pencabutan, serta penggunaan tautan. Data permintaan mencakup sesi admin dan, apabila diperlukan, parameter penyaringan yang merupakan asumsi antarmuka. Backend perlu memeriksa identitas dan kewenangan admin sebelum membaca Database Metadata. Permintaan ini tidak mencakup isi dokumen secara default; hasil peninjauan dikirim melalui F7. Aliran ini melintasi batas kepercayaan antara area publik dan backend. Autentikasi admin dan otorisasi berdasarkan peran masih perlu diverifikasi.",
               "outOfScope": false,
               "isTrustBoundary": false,
               "reasonOutOfScope": "",
@@ -1268,26 +1268,26 @@
               "threats": [
                 {
                   "id": "9a23eadb-9448-5399-bda3-a4c7a395f117",
-                  "title": "S2 - Penyerang menyamar sebagai admin",
+                  "title": "S2: Penyamaran sebagai admin",
                   "status": "Open",
                   "severity": "High",
                   "type": "Spoofing",
                   "modelType": "STRIDE",
-                  "description": "Jika sesi admin dicuri atau backend tidak memverifikasi peran pemanggil pada permintaan F6, penyerang dapat meminta metadata dan audit log sambil menyamar sebagai admin. Kemungkinan 2/3, dampak 3/3, skor 6/9.",
-                  "mitigation": "Validasi autentikasi dan otorisasi peran admin pada setiap permintaan F6, gunakan sesi dan cookie yang aman, HTTPS, serta MFA untuk akun admin.",
+                  "description": "Apabila sesi autentikasi admin dicuri atau identitas pemanggil tidak diverifikasi dengan benar, penyerang dapat menyamar sebagai admin untuk meminta metadata dan audit log melalui F6. Kondisi ini mengakibatkan akses informasi organisasi tanpa izin.\n\nPenilaian risiko: kemungkinan 2; dampak 3; skor 6 (Tinggi).",
+                  "mitigation": "Validasi autentikasi dan kewenangan admin pada setiap permintaan F6. Gunakan HTTPS, pengelolaan sesi dan cookie yang aman, serta autentikasi multifaktor (MFA) untuk akun admin.",
                   "new": false,
                   "number": 11,
                   "score": "2 x 3 = 6 (Tinggi)"
                 },
                 {
                   "id": "82cb56e0-f04a-4258-9fc0-204b3f46b2f3",
-                  "title": "E1 - Pengguna biasa memperoleh hak peninjauan admin pada F6",
+                  "title": "E1: Peningkatan hak akses pengguna biasa ke fungsi admin",
                   "status": "Open",
                   "severity": "High",
                   "type": "Elevation of privilege",
                   "modelType": "STRIDE",
-                  "description": "Jika backend hanya mempercayai role yang dikirim browser atau gagal memeriksa hak akses endpoint audit log, pengguna biasa dapat mengirim permintaan seperti admin melalui F6 dan memperoleh metadata atau audit log di luar kewenangannya. Ini berbeda dari Spoofing F6: penyerang tidak perlu mencuri akun admin, melainkan mengeksploitasi kesalahan otorisasi. Kemungkinan 2/3, dampak 3/3, skor 6/9.",
-                  "mitigation": "Terapkan otorisasi peran server-side (RBAC) pada setiap permintaan metadata dan audit log; ambil role dari sumber sesi/identitas yang telah diverifikasi, jangan terima role dari browser sebagai bukti, dan berikan prinsip least privilege.",
+                  "description": "Apabila backend memercayai informasi peran dari browser atau gagal memeriksa otorisasi fungsi audit log, pengguna biasa dapat memperoleh akses peninjauan metadata dan audit log melalui F6 di luar kewenangannya. Berbeda dari penyamaran, skenario ini tidak mensyaratkan pencurian akun admin; pengguna memanfaatkan kelemahan pemeriksaan hak akses.\n\nPenilaian risiko: kemungkinan 2; dampak 3; skor 6 (Tinggi).",
+                  "mitigation": "Terapkan pengendalian akses berdasarkan peran (RBAC) pada backend untuk setiap permintaan metadata dan audit log. Peroleh informasi peran dari sesi atau sumber identitas terverifikasi; jangan gunakan informasi peran yang dikirim browser sebagai bukti otorisasi. Terapkan prinsip hak akses minimum.",
                   "new": false,
                   "number": 8,
                   "score": "2 x 3 = 6 (Tinggi)"
@@ -1344,7 +1344,7 @@
             "data": {
               "type": "tm.Flow",
               "name": "F7",
-              "description": "Pengembalian Metadata dan Audit Log | Backend Dokumen -> Admin Organisasi. Setelah memproses F6 dan memperoleh data dari Database Metadata, backend mengirim hasil peninjauan kepada admin melalui browser. Data mencakup metadata dokumen (pemilik, nama, tipe, waktu unggah) serta riwayat pembuatan, pencabutan, dan penggunaan tautan. Respons bukan permintaan audit log baru dan tidak seharusnya memuat isi file atau kredensial/token aktif. Hak membaca log tidak sama dengan hak mengunduh file. Aliran melintasi batas backend dan publik. Asumsi untuk ancaman kebocoran: jika log menyimpan token mentah dan respons tidak meredaksinya, admin dapat memperoleh akses tidak langsung ke dokumen.",
+              "description": "F7: Pengembalian Metadata dan Audit Log\n\nAliran ini berlangsung dari Backend Dokumen menuju Admin Organisasi. Backend mengembalikan hasil peninjauan F6 yang diperoleh dari Database Metadata. Informasi yang dikirim mencakup identitas pemilik, nama file, tipe file, waktu unggah, dan riwayat penggunaan tautan. Respons tidak seharusnya memuat isi file maupun token aktif; hak peninjauan log tidak memberikan hak unduh dokumen secara otomatis. Aliran ini melintasi batas kepercayaan antara backend dan area publik. Skenario kebocoran token didasarkan pada asumsi bahwa audit log menyimpan token secara utuh dan backend tidak menyaringnya sebelum mengirim respons.",
               "outOfScope": false,
               "isTrustBoundary": false,
               "reasonOutOfScope": "",
@@ -1356,13 +1356,13 @@
               "threats": [
                 {
                   "id": "0a8eeb58-fb01-513a-9b40-21b0b710fb3b",
-                  "title": "I5 - Token tautan aktif bocor lewat audit log",
+                  "title": "I5: Kebocoran token tautan aktif melalui audit log",
                   "status": "Open",
                   "severity": "High",
                   "type": "Information disclosure",
                   "modelType": "STRIDE",
-                  "description": "Jika audit log menyimpan URL atau token berbagi yang masih aktif secara lengkap, respons F7 dapat mengungkapnya kepada admin. Karena penerima boleh membuka tautan tanpa login, admin dapat memakai token itu untuk mengunduh file meskipun tidak punya izin default membaca isi file. Asumsi penting: log memang mencatat token mentah; ini tidak dipastikan dalam soal. Kemungkinan 2/3, dampak 3/3, skor 6/9.",
-                  "mitigation": "Jangan simpan atau tampilkan bearer token mentah pada audit log; gunakan ID tautan internal atau token yang disamarkan, redaksi field sensitif pada endpoint admin, dan batasi data log hanya sesuai keperluan peninjauan.",
+                  "description": "Apabila audit log menyimpan URL atau token berbagi yang masih aktif secara utuh, respons F7 dapat mengungkapkan token tersebut kepada admin. Karena penerima tidak diwajibkan melakukan login, admin dapat menggunakan token untuk mengunduh dokumen meskipun tidak memiliki hak membaca isi file secara default. Skenario ini didasarkan pada asumsi bahwa token utuh dicatat dalam log; kondisi tersebut belum dipastikan dalam kasus.\n\nPenilaian risiko: kemungkinan 2; dampak 3; skor 6 (Tinggi).",
+                  "mitigation": "Jangan menyimpan atau menampilkan token akses secara utuh dalam audit log. Gunakan identitas tautan internal atau token yang disamarkan; saring informasi sensitif pada respons fungsi peninjauan admin dan batasi data sesuai kebutuhan peninjauan.",
                   "new": false,
                   "number": 12,
                   "score": "2 x 3 = 6 (Tinggi)"
@@ -1419,7 +1419,7 @@
             "data": {
               "type": "tm.Flow",
               "name": "F8",
-              "description": "Penyimpanan Metadata dan Informasi Tautan | Backend Dokumen -> Database Metadata. Backend menulis atau memperbarui data terstruktur ketika file diunggah dan tautan dikelola. Data mencakup identitas pemilik, nama file, tipe file, waktu unggah, referensi objek (asumsi), identitas tautan, waktu kedaluwarsa, dan status pencabutan. Masa berlaku seharusnya ditetapkan 24 jam berdasarkan waktu server, dan pembaruan status harus sesuai kewenangan pemilik. F8 tidak membawa isi file dan tidak menggantikan audit log F10: F8 menyimpan data serta keadaan terkini, sedangkan F10 menyimpan riwayat peristiwa. Aliran melintasi batas backend dan penyimpanan. Format penyimpanan token belum ditentukan.",
+              "description": "F8: Penyimpanan Metadata dan Informasi Tautan\n\nAliran ini berlangsung dari Backend Dokumen menuju Database Metadata. Backend menulis atau memperbarui identitas pemilik, nama file, tipe file, waktu unggah, identitas tautan, waktu kedaluwarsa, dan status pencabutan. Referensi objek merupakan asumsi yang diperlukan untuk menghubungkan metadata dengan isi file. Masa berlaku tautan ditetapkan selama 24 jam berdasarkan waktu server; perubahan status harus sesuai kewenangan pemilik. F8 menyimpan data serta keadaan terkini dokumen dan tautan, sedangkan F10 mencatat riwayat aktivitas. Isi file tidak dikirim melalui F8. Aliran ini melintasi batas kepercayaan antara backend dan penyimpanan. Format penyimpanan token belum ditentukan dalam kasus.",
               "outOfScope": false,
               "isTrustBoundary": false,
               "reasonOutOfScope": "",
@@ -1431,13 +1431,13 @@
               "threats": [
                 {
                   "id": "5668af34-db46-471e-a2bc-57470bbde794",
-                  "title": "T2 - Data masa berlaku atau pencabutan ditulis secara tidak sah",
+                  "title": "T2: Manipulasi masa berlaku dan status pencabutan tautan",
                   "status": "Open",
                   "severity": "High",
                   "type": "Tampering",
                   "modelType": "STRIDE",
-                  "description": "Jika backend meneruskan nilai kedaluwarsa, status pencabutan, atau kepemilikan dari permintaan pengguna tanpa validasi saat menulis melalui F8, data tautan di Database Metadata dapat berubah secara tidak sah; misalnya tautan berlaku lebih dari 24 jam atau tautan pengguna lain dicabut. Asumsi: validasi backend belum dijelaskan. Kemungkinan 2/3, dampak 3/3, skor 6/9.",
-                  "mitigation": "Hitung waktu kedaluwarsa 24 jam di backend berdasarkan waktu server, validasi kepemilikan dan kewenangan perubahan status sebelum operasi tulis, gunakan query terparameter/constraint yang sesuai, batasi izin tulis DB, dan audit setiap perubahan.",
+                  "description": "Apabila backend menyimpan nilai kedaluwarsa, status pencabutan, atau kepemilikan dari permintaan pengguna tanpa validasi melalui F8, data pada Database Metadata dapat berubah tanpa izin. Kondisi tersebut dapat menyebabkan tautan berlaku lebih dari 24 jam atau pencabutan tautan milik pengguna lain. Skenario ini didasarkan pada mekanisme validasi backend yang belum dijelaskan dalam kasus.\n\nPenilaian risiko: kemungkinan 2; dampak 3; skor 6 (Tinggi).",
+                  "mitigation": "Tetapkan waktu kedaluwarsa selama 24 jam berdasarkan waktu server. Validasi kepemilikan dan kewenangan perubahan status sebelum operasi tulis; gunakan kueri terparameter dan batasan database yang sesuai, batasi izin tulis, serta catat perubahan penting.",
                   "new": false,
                   "number": 3,
                   "score": "2 x 3 = 6 (Tinggi)"
@@ -1494,7 +1494,7 @@
             "data": {
               "type": "tm.Flow",
               "name": "F9",
-              "description": "Pengembalian Metadata dan Status Tautan | Database Metadata -> Backend Dokumen. Database mengembalikan hasil pembacaan data yang dibutuhkan backend, antara lain metadata dokumen, referensi objek (asumsi), informasi masa berlaku dan status pencabutan, daftar tautan, atau catatan audit untuk peninjauan admin. Backend menggunakan data tersebut untuk menanggapi permintaan pemilik, memvalidasi akses penerima, dan memenuhi permintaan admin. Database menyediakan fakta status yang tersimpan; backend yang membuat keputusan otorisasi. Aliran ini adalah respons pembacaan, bukan operasi tulis F8 atau pencatatan F10. Permintaan baca dari backend tidak digambar sebagai flow terpisah dalam model 12 flow ini. Aliran melintasi batas penyimpanan dan backend.",
+              "description": "F9: Pengembalian Metadata dan Status Tautan\n\nAliran ini berlangsung dari Database Metadata menuju Backend Dokumen. Database mengembalikan hasil pembacaan berupa metadata, referensi objek yang diasumsikan tersedia, informasi masa berlaku, status pencabutan, daftar tautan, atau catatan audit yang diperlukan. Backend menggunakan data tersebut untuk memproses permintaan pemilik, memeriksa akses penerima, dan memenuhi permintaan peninjauan admin. Database menyediakan informasi yang tersimpan; keputusan otorisasi ditetapkan oleh backend. Permintaan baca tidak digambarkan sebagai aliran terpisah pada model ini. Aliran ini melintasi batas kepercayaan antara penyimpanan dan backend.",
               "outOfScope": false,
               "isTrustBoundary": false,
               "reasonOutOfScope": "",
@@ -1555,7 +1555,7 @@
             "data": {
               "type": "tm.Flow",
               "name": "F10",
-              "description": "Pencatatan Aktivitas ke Audit Log | Backend Dokumen -> Database Metadata. Backend secara otomatis mencatat peristiwa pembuatan, pencabutan, dan penggunaan tautan. Data log yang direkomendasikan meliputi ID tautan internal, jenis aktivitas, waktu server, identitas akun jika terautentikasi, dan hasil operasi; rincian format log belum ditetapkan oleh soal. Audit log berfungsi sebagai riwayat untuk penelusuran dan peninjauan oleh admin melalui F6/F7, bukan sebagai penyimpanan status tautan saat ini. Untuk penerima tanpa login, catatan penggunaan tautan tidak membuktikan identitas pribadi penerima. Token aktif tidak seharusnya dicatat mentah. Aliran melintasi batas backend dan penyimpanan.",
+              "description": "F10: Pencatatan Aktivitas ke Audit Log\n\nAliran ini berlangsung dari Backend Dokumen menuju Database Metadata. Backend mencatat aktivitas pembuatan, pencabutan, dan penggunaan tautan secara otomatis. Data log yang direkomendasikan mencakup identitas tautan internal, jenis aktivitas, waktu server, identitas akun apabila terautentikasi, dan hasil operasi. Audit log digunakan untuk penelusuran aktivitas dan peninjauan admin melalui F6 dan F7, bukan untuk menyimpan keadaan terkini tautan. Karena penerima tidak diwajibkan melakukan login, catatan penggunaan tautan tidak membuktikan identitas pribadi penerima. Token aktif tidak seharusnya dicatat secara utuh. Aliran ini melintasi batas kepercayaan antara backend dan penyimpanan; format log belum ditentukan dalam kasus.",
               "outOfScope": false,
               "isTrustBoundary": false,
               "reasonOutOfScope": "",
@@ -1567,13 +1567,13 @@
               "threats": [
                 {
                   "id": "1e9f455c-b7b3-4d05-9c52-f620ca27e78a",
-                  "title": "R1 - Aktivitas tautan tidak dapat dipertanggungjawabkan",
+                  "title": "R1: Penyangkalan aktivitas pengelolaan tautan",
                   "status": "Open",
                   "severity": "Medium",
                   "type": "Repudiation",
                   "modelType": "STRIDE",
-                  "description": "Jika catatan pembuatan, penggunaan, atau pencabutan tautan tidak tersimpan lengkap atau dapat diubah/dihapus, tindakan tersebut sulit ditelusuri dan dapat disangkal. Untuk penerima tanpa login, log membuktikan peristiwa penggunaan token, bukan identitas pribadi penerima. Kemungkinan 2/3, dampak 2/3, skor 4/9.",
-                  "mitigation": "Catat ID tautan internal, operasi, waktu server, identitas akun jika login, dan hasilnya; gunakan log append-only atau proteksi terhadap perubahan/hapus, batasi izin tulis, dan monitor kegagalan pencatatan. Hindari mencatat token tautan lengkap.",
+                  "description": "Apabila catatan pembuatan, penggunaan, atau pencabutan tautan tidak disimpan secara lengkap atau dapat diubah maupun dihapus tanpa izin, aktivitas tersebut sulit ditelusuri dan dapat disangkal. Untuk penerima tanpa login, log hanya dapat membuktikan peristiwa penggunaan tautan, bukan identitas pribadi penerima.\n\nPenilaian risiko: kemungkinan 2; dampak 2; skor 4 (Sedang).",
+                  "mitigation": "Catat identitas tautan internal, jenis operasi, waktu server, identitas akun apabila terautentikasi, dan hasil operasi. Terapkan mekanisme pencatatan yang hanya mengizinkan penambahan data atau perlindungan terhadap perubahan dan penghapusan; batasi izin tulis, pantau kegagalan pencatatan, serta hindari pencatatan token secara utuh.",
                   "new": false,
                   "number": 4,
                   "score": "2 x 2 = 4 (Sedang)"
@@ -1630,7 +1630,7 @@
             "data": {
               "type": "tm.Flow",
               "name": "F11",
-              "description": "Penyimpanan dan Permintaan File | Backend Dokumen -> Object Storage. Pada proses unggah, backend meneruskan isi file beserta identitas/referensi objek yang diperlukan agar dokumen dapat disimpan. Pada proses unduh, setelah memvalidasi akses, backend mengirim permintaan pengambilan file berdasarkan referensi objek yang sesuai. Isi file disimpan di Object Storage, sementara metadata dan informasi tautan disimpan melalui F8. Object Storage mengirim hasil operasi melalui F12. Aliran melintasi batas backend dan penyimpanan. Ancaman yang dipilih berfokus pada perubahan isi dokumen saat proses penyimpanan atau penimpaan objek tanpa izin; mekanisme izin tulis dan verifikasi integritas belum ditetapkan dalam kasus.",
+              "description": "F11: Penyimpanan dan Permintaan File\n\nAliran ini berlangsung dari Backend Dokumen menuju Object Storage. Pada proses unggah, backend mengirimkan isi file dan referensi objek untuk penyimpanan. Pada proses unduh, backend mengirim permintaan pengambilan file berdasarkan referensi objek setelah memeriksa otorisasi. Isi file disimpan pada Object Storage, sedangkan metadata disimpan melalui F8. Hasil operasi dikembalikan melalui F12. Aliran ini melintasi batas kepercayaan antara backend dan penyimpanan. Analisis ancaman berfokus pada perubahan isi dokumen selama proses penyimpanan atau penimpaan objek tanpa izin; mekanisme izin tulis dan pemeriksaan integritas belum ditentukan dalam kasus.",
               "outOfScope": false,
               "isTrustBoundary": false,
               "reasonOutOfScope": "",
@@ -1642,13 +1642,13 @@
               "threats": [
                 {
                   "id": "e3f79547-7710-5e5f-be65-5f040160ebb2",
-                  "title": "T4 - Manipulasi isi dokumen pada proses penyimpanan objek",
+                  "title": "T4: Manipulasi isi dokumen saat penyimpanan objek",
                   "status": "Open",
                   "severity": "High",
                   "type": "Tampering",
                   "modelType": "STRIDE",
-                  "description": "Jika proses penulisan file ke Object Storage pada F11 disusupi atau pihak yang tidak berwenang dapat menimpa objek saat/ setelah file disimpan, isi dokumen yang tersimpan bisa berbeda dari file asli yang diunggah pemilik. Dampaknya adalah hilangnya integritas file dan penerima dapat memperoleh dokumen yang telah dimodifikasi. Asumsi: izin tulis storage atau jalur penyimpanan belum cukup dilindungi; kasus tidak menyatakan bahwa manipulasi benar-benar terjadi. Kemungkinan 2/3, dampak 3/3, skor 6/9.",
-                  "mitigation": "Batasi akses tulis Object Storage hanya untuk backend yang berwenang, gunakan TLS saat menyimpan, buat hash/checksum isi file dari sumber tepercaya sebelum penyimpanan lalu verifikasi hasil simpan/ketika dibaca kembali; aktifkan versioning atau perlindungan objek dari penimpaan bila sesuai kebutuhan, serta catat perubahan objek.",
+                  "description": "Apabila proses penulisan file melalui F11 disusupi atau pihak yang tidak berwenang dapat menimpa objek selama maupun setelah penyimpanan, isi dokumen pada Object Storage dapat berbeda dari dokumen asli. Kondisi ini mengganggu integritas dokumen dan menyebabkan penerima memperoleh file yang telah dimodifikasi. Skenario ini mengasumsikan bahwa izin tulis atau jalur penyimpanan belum terlindungi secara memadai.\n\nPenilaian risiko: kemungkinan 2; dampak 3; skor 6 (Tinggi).",
+                  "mitigation": "Batasi izin tulis Object Storage pada backend yang berwenang dan gunakan TLS. Hitung nilai hash atau checksum dari sumber tepercaya sebelum penyimpanan; verifikasi integritas setelah penyimpanan dan saat file dibaca kembali. Terapkan penyimpanan versi objek atau perlindungan terhadap penimpaan sesuai kebutuhan serta catat perubahan objek.",
                   "new": false,
                   "number": 14,
                   "score": "2 x 3 = 6 (Tinggi)"
@@ -1705,7 +1705,7 @@
             "data": {
               "type": "tm.Flow",
               "name": "F12",
-              "description": "Pengembalian File dan Status Penyimpanan | Object Storage -> Backend Dokumen. Setelah menerima F11, Object Storage mengembalikan hasil operasi kepada backend. Untuk penyimpanan, respons dapat berisi status berhasil/gagal dan referensi objek; untuk pengambilan, respons berisi isi file yang diminta atau pesan kegagalan jika file tidak tersedia. Backend menggunakan hasil ini untuk memproses respons unggah kepada pemilik melalui F3 atau meneruskan isi file kepada penerima yang telah diizinkan melalui F5. F12 tidak menentukan hak akses penerima dan tidak mengirim file langsung ke browser. Aliran melintasi batas penyimpanan dan backend; rincian protokol dan format respons merupakan asumsi implementasi.",
+              "description": "F12: Pengembalian File dan Status Penyimpanan\n\nAliran ini berlangsung dari Object Storage menuju Backend Dokumen. Setelah menerima permintaan F11, Object Storage mengembalikan hasil operasi penyimpanan atau pengambilan file. Respons penyimpanan dapat memuat status keberhasilan dan referensi objek; respons pengambilan memuat isi file atau pesan kegagalan apabila file tidak tersedia. Backend menggunakan respons tersebut untuk menyampaikan hasil unggah melalui F3 atau meneruskan file yang diizinkan melalui F5. F12 tidak menentukan hak akses penerima dan tidak mengirim file langsung kepada browser. Aliran ini melintasi batas kepercayaan antara penyimpanan dan backend. Protokol serta format respons belum ditentukan dalam kasus.",
               "outOfScope": false,
               "isTrustBoundary": false,
               "reasonOutOfScope": "",
@@ -1741,7 +1741,7 @@
             ]
           }
         ],
-        "description": "DFD sistem berbagi dokumen: 12 aliran data F1-F12 dan 3 trust boundary. Temuan STRIDE khusus pada F1, F2, F4, F6, F7, F8, F10, dan F11; aliran lain tetap ada tanpa ancaman tersendiri. F7 mengasumsikan audit log memuat token aktif; F11 menilai potensi manipulasi isi file selama proses penyimpanan Object Storage. Temuan adalah skenario potensial yang perlu diverifikasi, bukan kerentanan terbukti."
+        "description": "Diagram aliran data memuat 12 aliran (F1 hingga F12) dan tiga batas kepercayaan. Analisis STRIDE dilakukan pada F1, F2, F4, F6, F7, F8, F10, F11, Backend Dokumen, dan Object Storage. Aliran lainnya tetap ditampilkan tanpa temuan tersendiri. Analisis F7 didasarkan pada kemungkinan audit log memuat token aktif; analisis F11 berfokus pada manipulasi isi file selama proses penyimpanan. Seluruh temuan merupakan potensi ancaman yang memerlukan verifikasi, bukan kerentanan yang telah terbukti."
       }
     ],
     "diagramTop": 1,
