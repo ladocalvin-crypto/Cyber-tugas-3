@@ -4,12 +4,22 @@
   "released_at": "2026-11-23",
   "summary": {
     "title": "Sistem Berbagi Dokumen",
-    "owner": "nadia",
+    "owner": "Kelompok Kasus B",
     "description": "Sistem berbasis web ini digunakan oleh organisasi untuk berbagi dokumen melalui tautan sementara yang berlaku selama 24 jam. Pemilik dokumen mengunggah file melalui akun yang dimilikinya. Backend Dokumen menyimpan isi file pada Object Storage; metadata dokumen dan informasi tautan disimpan pada Database Metadata. Pemilik dapat membuat, meninjau, dan mencabut tautan. Penerima dapat mengakses dokumen tanpa melakukan login setelah backend memeriksa masa berlaku dan status pencabutan tautan. Aktivitas pembuatan, pencabutan, dan penggunaan tautan dicatat dalam audit log. Admin Organisasi berwenang meninjau metadata dan audit log, tetapi tidak memiliki hak akses terhadap isi dokumen secara default. Ruang lingkup analisis meliputi unggah, pengelolaan tautan, akses, pengunduhan, dan pencatatan aktivitas; pengiriman pesan atau surel serta sinkronisasi perangkat berada di luar lingkup analisis. Asumsi perancangan meliputi autentikasi pemilik dan admin, penggunaan token acak, komunikasi HTTPS, penentuan waktu kedaluwarsa berdasarkan waktu server, penyimpanan privat, serta pemberlakuan pencabutan pada permintaan akses berikutnya. Penerapan asumsi tersebut masih perlu diverifikasi.",
     "id": 0
   },
   "detail": {
-    "contributors": [],
+    "contributors": [
+      {
+        "name": "103072400028; HIRELDA TALAHATU"
+      },
+      {
+        "name": "103072400087; NADIA SABRINA KHOIRIYAH"
+      },
+      {
+        "name": "103072400158; CALVIN IMMANUEL LADO"
+      }
+    ],
     "diagrams": [
       {
         "id": 0,
